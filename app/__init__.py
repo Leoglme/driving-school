@@ -1,10 +1,9 @@
 from flask import Flask
+from .routes.index import router
 
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'lorem ipsum'
-    from .views import views
-
-    app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(router)
     return app
