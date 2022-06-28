@@ -23,7 +23,8 @@ def create_app():
     # Import models
     from .models import User, Role
 
-    # Routes
+    # Import routes
+    from .routes import user, auth, user
     app.register_blueprint(router)
 
     create_database(app)

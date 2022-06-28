@@ -8,5 +8,3 @@ def home():
     return 'home'
 
 
-# import declared routes
-import app.routes.meet
