@@ -5,7 +5,7 @@ from sqlalchemy.sql import func
 
 class Meet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True)
+    name = db.Column(db.String(150))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     duration = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())

@@ -11,7 +11,7 @@ from datetime import datetime
 def store_meet():
     payload = request.get_json()
     name = payload['name']
-    date = datetime.strptime(payload['date'], '%b %d %Y %I:%M%p')
+    date = datetime.fromisoformat(payload['date'])
     duration = payload['duration']
     student_id = payload['student_id']
     instructor_id = payload['instructor_id']
@@ -44,7 +44,7 @@ def update_meet(meet_id):
     if meet:
         payload = request.get_json()
         meet.name = payload['name']
-        meet.date = payload['date']
+        meet.date = datetime.fromisoformat(payload['date'])
         meet.duration = payload['duration']
         meet.student_id = payload['student_id']
         meet.instructor_id = payload['instructor_id']
