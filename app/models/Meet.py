@@ -7,7 +7,7 @@ class Meet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
-    duration = db.Column(db.DateTime(timezone=True), default=0)
+    duration = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     instructor_id = db.Column(db.Integer, db.ForeignKey('user.id'))

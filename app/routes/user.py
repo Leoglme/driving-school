@@ -7,7 +7,7 @@ from flask import jsonify
 
 # Create user
 @router.route('/user', methods=['POST'])
-def store():
+def store_user():
     payload = request.get_json()
     email = payload['email']
     password = payload['password']
@@ -22,14 +22,14 @@ def store():
 
 # Get all users
 @router.route('/users', methods=['GET'])
-def index():
+def index_user():
     users = User.query.all()
     return jsonify(User.serialize_list(users))
 
 
 # Get user by id
 @router.route('/user/<int:user_id>', methods=['GET'])
-def show(user_id):
+def show_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user:
         return jsonify(User.serialize(user))
@@ -38,7 +38,7 @@ def show(user_id):
 
 # Update user
 @router.route('/user/<int:user_id>', methods=['PUT'])
-def update(user_id):
+def update_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user:
         payload = request.get_json()
@@ -53,7 +53,7 @@ def update(user_id):
 
 # Delete user
 @router.route('/user/<int:user_id>', methods=['DELETE'])
-def destroy(user_id):
+def destroy_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user:
         db.session.delete(user)
