@@ -1,3 +1,5 @@
+# https://www.askpython.com/python-modules/flask/flask-user-authentication
+
 # from flask import request
 # from werkzeug.security import check_password_hash
 # from flask import jsonify
@@ -35,3 +37,21 @@
 #     blacklist.add(jti)
 #     return jsonify({"message": "Successfully logged out"}), 200
 #
+
+
+# from flask_login import current_user, login_user
+#
+#
+# @app.route('/login', methods=['POST', 'GET'])
+# def login():
+#     if current_user.is_authenticated:
+#         return redirect('/blogs')
+#
+#     if request.method == 'POST':
+#         email = request.form['email']
+#         user = UserModel.query.filter_by(email=email).first()
+#         if user is not None and user.check_password(request.form['password']):
+#             login_user(user)
+#             return redirect('/blogs')
+#
+#     return render_template('login.html')
