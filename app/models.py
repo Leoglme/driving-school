@@ -1,6 +1,8 @@
 from . import db
 from sqlalchemy.sql import func
 
+from .services.serializer import Serializer
+
 
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -16,3 +18,8 @@ class User(db.Model):
     last_name = db.Column(db.String(150))
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        del d['password']
+        return d
