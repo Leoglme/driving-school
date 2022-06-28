@@ -3,19 +3,20 @@ from .index import router
 from flask import request
 from .. import db
 from ..models import User
+from flask import jsonify
 
 
 @router.route('/users', methods=['GET'])
 def index():
     users = User.query.all()
-    return json.dumps(User.serialize_list(users))
+    return jsonify(User.serialize_list(users))
 
 
 @router.route('/user/<int:user_id>', methods=['GET'])
 def show(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user:
-        return json.dumps(User.serialize(user), default=str)
+        return jsonify(User.serialize(user))
     return f"User with id {user_id} doesn't exist"
 
 

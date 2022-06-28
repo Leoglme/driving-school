@@ -19,6 +19,10 @@ class User(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
 
+    def serialize_list(self):
+        d = Serializer.serialize_list(self)
+        return d
+
     def serialize(self):
         d = Serializer.serialize(self)
         del d['password']
