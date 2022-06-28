@@ -21,7 +21,7 @@ def create_app():
     db.init_app(app)
 
     # Import models
-    from .models import User, Role
+    from .models import User, Role, Meet
 
     # Import routes
     from .routes import user, auth, user

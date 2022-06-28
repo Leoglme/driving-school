@@ -1,7 +1,7 @@
 from .index import router
 from flask import request
 from .. import db
-from ..models import User
+from ..models.User import User
 from flask import jsonify
 
 
