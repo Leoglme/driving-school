@@ -1,13 +1,6 @@
-from . import db
+from .. import db
+from ..services.serializer import Serializer
 from sqlalchemy.sql import func
-
-from .services.serializer import Serializer
-
-
-class Role(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150))
-    notes = db.relationship('User')
 
 
 class User(db.Model):
