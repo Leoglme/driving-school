@@ -1,3 +1,3 @@
 <template>
-    <router-view />
+  <h2>toto</h2>
 </template>
