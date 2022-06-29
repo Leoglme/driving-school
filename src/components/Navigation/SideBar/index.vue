@@ -71,8 +71,7 @@
                     ? 'text-emerald-500 hover:text-emerald-600'
                     : 'text-blueGray-700 hover:text-blueGray-500',
                 ]">
-                <i
-                    class="fas fa-tv mr-2 text-sm"
+                <i class="fas fa-tv mr-2 text-sm"
                     :class="[isActive ? 'opacity-75' : 'text-blueGray-300']"
                 ></i>
                 Dashboard
