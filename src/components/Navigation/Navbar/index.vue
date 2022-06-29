@@ -1,11 +1,7 @@
 <template>
   <!-- Navbar -->
-  <nav class="top-0 left-0 w-full z-10 bg-white hidden sticky md:flex items-center p-4">
-    <div class="w-full mx-autp items-center flex justify-between md:flex-nowrap flex-wrap md:px-10 px-4">
-      <!-- Brand -->
-      <a class="text-white text-sm uppercase hidden lg:inline-block font-semibold">
-        Dashboard
-      </a>
+  <nav class="top-0 left-0 w-full z-10 bg-white hidden shadow-sm sticky md:flex items-center p-2">
+    <div class="w-full mx-autp items-center flex justify-end md:flex-nowrap flex-wrap md:px-10 px-4">
       <!-- User -->
       <ul class="flex-col md:flex-row list-none items-center hidden md:flex">
         <user-dropdown />

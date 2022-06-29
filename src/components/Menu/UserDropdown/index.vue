@@ -5,7 +5,7 @@
        @click="toggleDropdown">
       <div class="items-center flex">
         <span
-            class="cursor-pointer text-emerald-500 hover:text-emerald-600 w-12 h-12 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full">
+            class="cursor-pointer text-emerald-500 hover:text-emerald-600 w-10 h-10 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full">
           <i class="fa-regular fa-user"/>
         </span>
       </div>
