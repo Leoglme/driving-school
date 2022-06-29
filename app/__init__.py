@@ -25,6 +25,7 @@ def create_app():
 
     # Import routes
     from .routes import user, auth, user, meet
+
     app.register_blueprint(router)
 
     create_database(app)
