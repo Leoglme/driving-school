@@ -13,7 +13,7 @@
       </button>
       <!-- Brand -->
       <router-link
-          class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+          class="md:block text-center md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
           to="/"
       >
         Driving school
@@ -26,8 +26,8 @@
       </ul>
       <!-- Collapse -->
       <div
-          class="md:flex md:flex-col md:items-stretch md:opacity-100 md:relative md:mt-4 md:shadow-none shadow absolute top-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden h-auto items-center flex-1 rounded"
-          v-bind:class="collapseShow">
+          class="md:flex md:flex-col md:items-stretch md:opacity-100 md:relative md:shadow-none shadow absolute top-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden h-auto items-center flex-1 rounded"
+          :class="collapseShow">
         <!-- Collapse header -->
         <div
             class="md:min-w-full md:hidden block pb-4 mb-4 border-b border-solid border-blueGray-200"
@@ -63,8 +63,8 @@
                   class="text-xs uppercase py-3 font-bold block"
                   :class="[
                   isExactActive
-                    ? 'text-emerald-500 hover:text-emerald-600'
-                    : 'text-blueGray-700 hover:text-blueGray-500',
+                    ? 'text-amber-400 hover:text-emerald-600'
+                    : 'text-blueGray-700 hover:text-blueGray-400',
                 ]">
                 <i class="mr-2 text-sm"
                    :class="[isExactActive ? 'opacity-75' : 'text-blueGray-300', link.icon]"
