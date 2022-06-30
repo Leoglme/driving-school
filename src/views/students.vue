@@ -8,8 +8,7 @@
       <i class="fas fa-plus mr-1"></i> Ajouter un étudiant
     </button>
   </div>
-  {{users}}
-  <UserTable/>
+  <UserTable :users="users"/>
   <Pagination/>
 </template>
 

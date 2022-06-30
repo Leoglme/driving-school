@@ -4,7 +4,7 @@
       <div class="flex flex-wrap items-center">
         <div class="relative w-full px-4 max-w-full flex-grow flex-1">
           <h3 class="font-semibold text-lg text-blueGray-700">
-            Card Tables
+            Étudiants
           </h3>
         </div>
       </div>
@@ -24,25 +24,25 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
+        <tr v-for="user in users" :id="user.id">
           <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
             <img
-                :src="bootstrap"
+                :src="user.avatar"
                 class="h-12 w-12 bg-white rounded-full border"
                 alt="..."
             />
             <span class="text-blueGray-600 ml-3 font-bold">
-                Prénom Nom
+                {{ user.first_name }} {{ user.last_name }}
               </span>
           </th>
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-            email@example.com
+            {{ user.email }}
           </td>
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-            role
+            {{ user.role }}
           </td>
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-            25/04/98
+            {{ user.created_at }}
           </td>
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
             <div class="flex items-center">
@@ -68,6 +68,20 @@
   </div>
 </template>
 <script lang="ts" setup>
-const fields = ['Nom', 'email', 'role', 'Date création', 'Heures']
+type User = {
+  id: number,
+  role: number,
+  first_name: string,
+  last_name: string,
+  created_at: string,
+  email: string,
+  avatar: string
+}
 
+interface Props {
+  users: User[]
+}
+
+const fields = ['Nom', 'email', 'role', 'Date création', 'Heures']
+const { users } = defineProps<Props>()
 </script>
