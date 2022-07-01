@@ -6,4 +6,8 @@ const getUsers = async () => {
     return res.data;
 }
 
-export { getUsers }
+const deleteUsers = async (userId: number) => {
+    return await axios.delete(`${api_url}/user/${userId}`);
+}
+
+export { getUsers, deleteUsers }

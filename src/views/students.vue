@@ -8,17 +8,44 @@
       <i class="fas fa-plus mr-1"></i> Ajouter un étudiant
     </button>
   </div>
-  <UserTable :users="users"/>
+  <UserTable @delete="openModal" :users="users"/>
   <Pagination/>
+
+  <ConfirmModal @ok="onDeleteUser" ref="deleteStudentModal"/>
 </template>
 
-<script setup>
+<script lang="ts" setup>
+import type { User } from "@/types/user";
 import UserTable from "@/components/Table/UserTable.vue"
 import SearchBar from "@/components/Input/SearchBar.vue"
 import Pagination from "@/components/Navigation/Pagination.vue"
-import {getUsers} from "@/Api/users";
-import {ref} from "vue";
-const users = ref([])
+import ConfirmModal from "@/components/Modal/ConfirmModal.vue"
+import { deleteUsers, getUsers } from "@/Api/users";
+import { ref } from "vue";
 
-getUsers().then(r => users.value = r)
+const users = ref([])
+const deleteStudentModal = ref()
+const currentUserId = ref()
+
+const openModal = (user: User) => {
+  currentUserId.value = user.id
+  deleteStudentModal.value.content.title = "Confirmation de suppression"
+  deleteStudentModal.value.content.text = `Voulez-vous vraiment supprimer l'étudiant ${user.first_name} ${user.last_name} ?`
+  deleteStudentModal.value.setShow(true)
+}
+
+const refresh = () => {
+  getUsers().then(r => users.value = r)
+}
+
+const onDeleteUser = () => {
+  const userId = currentUserId.value;
+  deleteUsers(userId).then(() => {
+    console.log("success delete")
+    refresh()
+  })
+}
+
+refresh()
+
 </script>
