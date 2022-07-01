@@ -21,8 +21,11 @@ import SearchBar from "@/components/Input/SearchBar.vue"
 import Pagination from "@/components/Navigation/Pagination.vue"
 import ConfirmModal from "@/components/Modal/ConfirmModal.vue"
 import { deleteUsers, getUsers } from "@/Api/users";
-import { ref } from "vue";
+import type { Notyf } from 'notyf';
+import { inject, ref } from "vue";
 
+
+const notyf: Notyf | undefined = inject('notyf')
 const users = ref([])
 const deleteStudentModal = ref()
 const currentUserId = ref()
@@ -41,7 +44,7 @@ const refresh = () => {
 const onDeleteUser = () => {
   const userId = currentUserId.value;
   deleteUsers(userId).then(() => {
-    console.log("success delete")
+    notyf?.success('success delete')
     refresh()
   })
 }
