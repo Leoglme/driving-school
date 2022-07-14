@@ -32,7 +32,9 @@
                 alt="..."
             />
             <span class="text-blueGray-600 ml-3 font-bold">
+              <router-link class="link" :to="{ name: 'user-profile', params: { userId: user.id }}">
                 {{ user.first_name }} {{ user.last_name }}
+              </router-link>
               </span>
           </th>
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">

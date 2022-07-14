@@ -8,6 +8,8 @@ import Anonymous from "@/layouts/anonymous.vue";
 import Home from "@/views/index.vue"
 import Users from "@/views/students.vue"
 import Profile from "@/views/profile.vue"
+import UserProfile from "@/views/userProfile.vue"
+import Employees from "@/views/employees.vue"
 
 // routes
 const routes = [
@@ -24,9 +26,18 @@ const routes = [
                 component: Users,
             },
             {
+                path: "/employees",
+                component: Employees,
+            },
+            {
                 path: "/profile",
                 component: Profile,
-            }
+            },
+            {
+                path: "/user/:userId",
+                name: "user-profile",
+                component: UserProfile,
+            },
         ],
     },
 ];

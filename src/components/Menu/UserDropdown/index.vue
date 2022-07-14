@@ -5,7 +5,7 @@
        @click="toggleDropdown">
       <div class="items-center flex">
         <span
-            class="cursor-pointer text-emerald-500 hover:text-emerald-600 w-10 h-10 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full">
+            class="cursor-pointer text-indigo-600 hover:text-indigo-500 w-10 h-10 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full">
           <i class="fa-regular fa-user"/>
         </span>
       </div>
@@ -17,12 +17,12 @@
         block: dropdownPopoverShow,
       }">
       <a href="/profile"
-         class="hover:text-emerald-600 text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+         class="hover:text-indigo-600 text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
         Mon profile
       </a>
       <div class="h-0 my-2 border border-solid border-blueGray-100"/>
       <a href="/logout"
-         class="hover:text-emerald-600 text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+         class="hover:text-indigo-600 text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
         Déconnexion
       </a>
     </div>

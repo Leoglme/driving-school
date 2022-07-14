@@ -16,10 +16,13 @@
     "@fullcalendar/list": "^5.11.0",
     "@fullcalendar/timegrid": "^5.11.0",
     "@fullcalendar/vue3": "^5.11.1",
+    "@marcoschulte/vue3-progress": "^0.0.6",
     "@popperjs/core": "^2.11.5",
     "@tailwindcss/forms": "^0.5.2",
     "axios": "^0.27.2",
     "notyf": "^3.10.0",
+    "pinia": "^2.0.16",
+    "sass": "^1.53.0",
     "vue": "^3.2.37",
     "vue-router": "^4.0.16"
   },
