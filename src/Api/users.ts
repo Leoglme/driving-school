@@ -1,6 +1,6 @@
 import axios from "axios";
 import { api_url } from "@/Api/index";
-import type { UserCommand } from "@/types/user";
+import type { CreateUserCommand, UserCommand } from "@/types/user";
 
 
 export const getUser = async (id: string) => {
@@ -12,11 +12,22 @@ export const getUsers = async () => {
     const res = await axios.get(`${api_url}/users`)
     return res.data;
 }
+export const getStudents = async (search: string | undefined) => {
+    const res = await axios.get(`${api_url}/students?search=${search}`)
+    return res.data;
+}
+export const getEmployee = async (search: string | undefined) => {
+    const res = await axios.get(`${api_url}/employee?search=${search}`)
+    return res.data;
+}
 
 export const deleteUsers = async (userId: number) => {
     return await axios.delete(`${api_url}/user/${userId}`);
 }
 
-export const updateUsers = async (userId: number, command: UserCommand) => {
+export const updateUser = async (userId: number, command: UserCommand) => {
     return await axios.put(`${api_url}/user/${userId}`, command);
+}
+export const createUser = async (command: CreateUserCommand) => {
+    return await axios.post(`${api_url}/user`, command);
 }

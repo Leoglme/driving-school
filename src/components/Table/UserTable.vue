@@ -24,7 +24,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="user in users" :id="user.id">
+
+        <tr v-for="user in users" :id="user.id" v-if="users.length">
           <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
             <img
                 :src="user.avatar"
@@ -66,6 +67,11 @@
             </button>
           </td>
         </tr>
+        <tr v-else>
+          <td class="p-4" colspan="100%">
+            <NoResult class="ml-auto mr-auto"/>
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -73,6 +79,7 @@
 </template>
 <script lang="ts" setup>
 import type { User } from "@/types/user";
+import NoResult from "@/components/State/NoResult.vue"
 
 interface Props {
   users: User[]
@@ -86,6 +93,9 @@ const emit = defineEmits<{
 
 const onDelete = (user: User) => emit('delete', user)
 
+
+
 const fields = ['Nom', 'email', 'role', 'Date création', 'Heures']
 const { users } = defineProps<Props>()
+
 </script>

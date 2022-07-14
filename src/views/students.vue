@@ -1,17 +1,16 @@
 <template>
   <div class="flex justify-center items-center my-4">
-    <SearchBar class="ml-auto" style="max-width: 600px"/>
-    <button
+    <SearchBar v-model:search="search" class="ml-auto" style="max-width: 600px"/>
+    <router-link to="/students/add" role="button"
         class="bg-indigo-600 text-white active:bg-indigo-500 font-bold uppercase text-xs px-6 py-3 rounded shadow
-      hover:shadow-md outline-none focus:outline-none ml-auto ease-linear transition-all duration-150"
-        type="button">
+      hover:shadow-md outline-none focus:outline-none ml-auto ease-linear transition-all duration-150">
       <i class="fas fa-plus mr-1"></i> Ajouter un étudiant
-    </button>
+    </router-link>
   </div>
-  <UserTable @delete="openModal" :users="users"/>
+  <UserTable @delete="openModal" :users="students" v-if="!pending"/>
   <Pagination/>
 
-  <ConfirmModal @ok="onDeleteUser" ref="deleteStudentModal"/>
+  <ConfirmModal @ok="onDeleteStudent" ref="deleteStudentModal"/>
 </template>
 
 <script lang="ts" setup>
@@ -20,32 +19,46 @@ import UserTable from "@/components/Table/UserTable.vue"
 import SearchBar from "@/components/Input/SearchBar.vue"
 import Pagination from "@/components/Navigation/Pagination.vue"
 import ConfirmModal from "@/components/Modal/ConfirmModal.vue"
-import { deleteUsers, getUsers } from "@/Api/users";
+import { deleteUsers, getStudents } from "@/Api/users";
 import type { Notyf } from 'notyf';
-import { inject, ref } from "vue";
+import { inject, ref, watch } from "vue";
 
-
+/*Hooks*/
 const notyf: Notyf | undefined = inject('notyf')
-const users = ref([])
-const deleteStudentModal = ref()
-const currentUserId = ref()
+/*Store*/
 
-const openModal = (user: User) => {
-  currentUserId.value = user.id
+/*Refs*/
+const students = ref([])
+const deleteStudentModal = ref()
+const currentStudentId = ref()
+const pending = ref(true)
+const search = ref('')
+
+/*Watch*/
+watch(() => search.value, () => {
+  refresh()
+})
+
+/*Methods*/
+const openModal = (student: User) => {
+  currentStudentId.value = student.id
   deleteStudentModal.value.content.title = "Confirmation de suppression"
-  deleteStudentModal.value.content.text = `Voulez-vous vraiment supprimer l'étudiant ${user.first_name} ${user.last_name} ?`
+  deleteStudentModal.value.content.text = `Voulez-vous vraiment supprimer l'étudiant ${student.first_name} ${student.last_name} ?`
   deleteStudentModal.value.setShow(true)
 }
 
-const refresh = () => {
-  getUsers().then(r => users.value = r)
+const refresh = async () => {
+  await getStudents(search.value).then(r => students.value = r)
+  pending.value = false;
 }
 
-const onDeleteUser = () => {
-  const userId = currentUserId.value;
-  deleteUsers(userId).then(() => {
-    notyf?.success('success delete')
+const onDeleteStudent = () => {
+  const studentId = currentStudentId.value;
+  deleteUsers(studentId).then(() => {
+    notyf?.success('L\'étudiant à été supprimé.')
     refresh()
+  }).catch(() => {
+    notyf?.error('Une erreur s\'est produite lors de la suppression')
   })
 }
 

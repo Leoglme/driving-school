@@ -15,3 +15,7 @@ export type UserCommand = {
     last_name: string,
     email: string
 }
+
+export type CreateUserCommand = UserCommand & {
+    password: string,
+}
