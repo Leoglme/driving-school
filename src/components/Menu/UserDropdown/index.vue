@@ -16,7 +16,7 @@
         hidden: !dropdownPopoverShow,
         block: dropdownPopoverShow,
       }">
-      <a href="/profile"
+      <a href="/account"
          class="hover:text-indigo-600 text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
         Mon profile
       </a>

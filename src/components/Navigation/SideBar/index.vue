@@ -14,7 +14,7 @@
       <!-- Brand -->
       <router-link
           class="flex text-center
-          items-center md:pb-2 text-blueGray-600 mr-0 whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+          items-center md:pb-2 text-gray-900 dark:text-white mr-0 whitespace-nowrap uppercase font-semibold p-4 px-0"
           to="/">
         <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 280.000000 280.000000" preserveAspectRatio="xMidYMid meet">
 
@@ -112,7 +112,7 @@ const links = [
   {
     'text': 'Profile',
     'icon': 'fas fa-user',
-    'to': '/profile'
+    'to': '/account'
   }
 ]
 
