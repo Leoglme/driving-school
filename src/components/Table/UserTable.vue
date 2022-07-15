@@ -4,7 +4,7 @@
       <div class="flex flex-wrap items-center">
         <div class="relative w-full px-4 max-w-full flex-grow flex-1">
           <h3 class="font-semibold text-lg text-blueGray-700">
-            Étudiants
+            {{ title }}
           </h3>
         </div>
       </div>
@@ -18,6 +18,10 @@
               class="bg-blueGray-50 text-blueGray-500 border-blueGray-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0
           border-r-0 whitespace-nowrap font-semibold text-left">
             {{ field }}
+          </th>
+          <th class="bg-blueGray-50 text-blueGray-500 border-blueGray-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0
+          border-r-0 whitespace-nowrap font-semibold text-left" v-if="!hideHour">
+            Heures
           </th>
           <th class="bg-blueGray-50 text-blueGray-500 border-blueGray-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
           />
@@ -42,12 +46,13 @@
             {{ user.email }}
           </td>
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-            {{ user.role }}
+            <BadgeRole :role="user.role"/>
           </td>
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-            {{ user.created_at }}
+            {{ format(new Date(user.created_at), 'dd/MM/yyyy - HH:mm') }}
           </td>
-          <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
+          <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2"
+              v-if="!hideHour">
             <div class="flex items-center">
               <span class="mr-2">60%</span>
               <div class="relative w-full">
@@ -78,11 +83,15 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { format } from 'date-fns'
 import type { User } from "@/types/user";
 import NoResult from "@/components/State/NoResult.vue"
+import BadgeRole from "@/components/Common/BadgeRole.vue"
 
 interface Props {
   users: User[]
+  hideHour: boolean
+  title: string
 }
 
 import { defineEmits } from 'vue'
@@ -94,8 +103,7 @@ const emit = defineEmits<{
 const onDelete = (user: User) => emit('delete', user)
 
 
-
-const fields = ['Nom', 'email', 'role', 'Date création', 'Heures']
-const { users } = defineProps<Props>()
+const fields = ['Nom', 'email', 'role', 'Date création']
+const { users, hideHour, title } = defineProps<Props>()
 
 </script>

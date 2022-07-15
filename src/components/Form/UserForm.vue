@@ -1,5 +1,5 @@
 <template>
-  <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors }"
+  <Form @submit="onSubmit" :validation-schema="action === 'update' ? schema : createSchema" v-slot="{ errors }"
         class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0">
     <div class="rounded-t bg-white mb-0 px-6 py-6">
       <div class="text-center flex justify-between">
@@ -27,8 +27,8 @@
                   name="first_name"
                   id="first_name"
                   type="text"
-                  :class="{'border-red-500 focus:border-red-500': errors.first_name}"
-                  class="border-transparent border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  :class="{'border-2 border-red-500 focus:border-red-500': errors.first_name}"
+                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
                   rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                   v-model="user.first_name"
@@ -51,8 +51,8 @@
                   name="last_name"
                   id="last_name"
                   type="text"
-                  :class="{'border-red-500 focus:border-red-500': errors.last_name}"
-                  class="border-transparent border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  :class="{'border-2 border-red-500 focus:border-red-500': errors.last_name}"
+                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
                   rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                   v-model="user.last_name"
@@ -82,8 +82,8 @@
                   name="email"
                   id="email"
                   type="email"
-                  :class="{'border-red-500 focus:border-red-500': errors.email}"
-                  class="border-transparent border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  :class="{'border-2 border-red-500 focus:border-red-500': errors.email}"
+                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
                   rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                   v-model="user.email"
@@ -111,9 +111,9 @@
                 <Field
                     id="password"
                     name="password"
-                    :class="{'border-red-500 focus:border-red-500': errors.password}"
+                    :class="{'border-2 border-red-500 focus:border-red-500': errors.password}"
                     :type="togglePassword ? 'text' : 'password'"
-                    class="border-transparent border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                    class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
                   rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                     v-model="user.password"
@@ -125,7 +125,7 @@
           </div>
           <div class="w-full lg:w-6/12 md:px-4">
             <div class="relative w-full mb-3">
-              <RoleSelect v-model:selected="user.role"/>
+              <RoleSelect v-model:selected="role"/>
             </div>
           </div>
         </div>
@@ -139,18 +139,11 @@ import RoleSelect from "@/components/Input/RoleSelect.vue"
 import type { CreateUserCommand, User, UserCommand } from "@/types/user";
 import { updateUser, createUser } from "@/Api/users";
 import type { Notyf } from "notyf";
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import type { PropType } from "vue";
 import { useRouter } from "vue-router";
 import { Form, Field } from 'vee-validate';
-
-/*Refs*/
-const togglePassword = ref(false)
-
-/*Hooks*/
-const notyf: Notyf | undefined = inject('notyf')
-const emit = defineEmits(['refresh'])
-const router = useRouter()
+import type { Role } from "@/types/referenciel";
 
 /*Props*/
 const { action, user } = defineProps({
@@ -158,13 +151,34 @@ const { action, user } = defineProps({
   user: { type: Object as PropType<User & { password: string }>, default: () => ({}) }
 });
 
+/*Refs*/
+const togglePassword = ref(false)
+const role = ref(user.role)
+
+/*Hooks*/
+const notyf: Notyf | undefined = inject('notyf')
+const emit = defineEmits(['refresh', 'setRole'])
+const router = useRouter()
+
+
 /*Computed*/
 const schema = {
   email: 'required|email',
   first_name: 'required',
+  last_name: 'required'
+};
+
+const createSchema = {
+  email: 'required|email',
+  first_name: 'required',
   last_name: 'required',
   password: 'required'
-};
+}
+
+/*Watch*/
+watch(() => role.value, (val: Role) => {
+  emit('setRole', val)
+}, { deep: true })
 
 /*Methods*/
 const disabled = (): boolean => {
@@ -190,8 +204,9 @@ const fullName = computed(() => user.first_name + " " + user.last_name)
 
 /* Appel Api*/
 const onSubmit = () => {
+  console.log(role.value)
   const command: UserCommand = {
-    role_id: user.role.id,
+    role_id: role.value.id,
     first_name: user.first_name,
     last_name: user.last_name,
     email: user.email

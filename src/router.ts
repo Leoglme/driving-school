@@ -7,7 +7,8 @@ import Anonymous from "@/layouts/anonymous.vue";
 //Views
 import Home from "@/views/index.vue"
 import Users from "@/views/students.vue"
-import addUser from "@/views/addUser.vue"
+import addStudent from "@/views/addStudent.vue"
+import addEmployee from "@/views/addEmployee.vue"
 import Profile from "@/views/profile.vue"
 import UserProfile from "@/views/userProfile.vue"
 import Employees from "@/views/employees.vue"
@@ -27,12 +28,16 @@ const routes = [
                 component: Users,
             },
             {
-                path: "/students/add",
-                component: addUser,
+                path: "/student/add",
+                component: addStudent,
             },
             {
                 path: "/employees",
                 component: Employees,
+            },
+            {
+                path: "/employee/add",
+                component: addEmployee,
             },
             {
                 path: "/profile",

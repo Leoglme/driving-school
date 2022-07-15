@@ -4,7 +4,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "types": [
-      "vue-router", "pinia"
+      "vue-router", "pinia", "date-fns"
     ],
     "paths": {
       "@/*": ["./src/*"]

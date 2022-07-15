@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="text-center mt-4">
-        <h3 class="text-xl font-semibold leading-normal mb-2 text-blueGray-700 mb-2">
+        <h3 class="text-xl font-semibold leading-normal mb-2 text-blueGray-700">
           {{ fullName }}
         </h3>
 
@@ -48,8 +48,8 @@
             {{ user.email }}
           </a>
         </div>
-        <div class="mb-2 text-blueGray-600 mt-2">
-          {{ user.role }}
+        <div class="mb-4 text-blueGray-600 mt-4">
+          <BadgeRole :role="user.role"/>
         </div>
       </div>
     </div>
@@ -59,7 +59,7 @@
 <script lang="ts" setup>
 import type { User } from "@/types/user";
 import { computed } from "vue";
-
+import BadgeRole from "@/components/Common/BadgeRole.vue"
 interface Props {
   user: User
 }

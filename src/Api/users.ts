@@ -21,7 +21,7 @@ export const getStudents = async (search: string | undefined, page: number | und
     const res = await axios.get(`${api_url}/students`, options)
     return res.data;
 }
-export const getEmployee = async (search: string | undefined, page: number | undefined) => {
+export const getEmployees = async (search: string | undefined, page: number | undefined) => {
     const options = {
         params: {
             search, page

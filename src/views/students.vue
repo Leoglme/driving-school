@@ -1,13 +1,13 @@
 <template>
   <div class="flex wrap flex-wrap gap-4 justify-center items-center mb-4">
     <SearchBar v-model:search="search" class="ml-auto" style="max-width: 600px"/>
-    <router-link to="/students/add" role="button"
+    <router-link to="/student/add" role="button"
                  class="bg-indigo-600 text-white active:bg-indigo-500 font-bold uppercase text-xs px-6 py-3 rounded shadow
       hover:shadow-md outline-none focus:outline-none ml-auto ease-linear transition-all duration-150">
       <i class="fas fa-plus mr-1"></i> Ajouter un étudiant
     </router-link>
   </div>
-  <UserTable @delete="openModal" :users="students" v-if="!pending"/>
+  <UserTable title="Étudiants" @delete="openModal" :users="students" v-if="!pending"/>
 
   <Pagination v-model:currentPage="currentPage" :total="studentsCount" :total-pages="totalPages"/>
 
