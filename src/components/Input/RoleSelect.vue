@@ -2,6 +2,7 @@
   <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="role_id">
     Rôle
   </label>
+
   <select id="role_id"
           name="selectedRole"
           v-model="selectedRole"
@@ -15,20 +16,26 @@
 
 <script lang="ts" setup>
 import { useReferencielStore } from "@/stores/referenciel";
-import { ref, watch } from "vue";
+import { ref, toRefs, watch } from "vue";
 import type { Role } from "@/types/referenciel";
 
 interface Props {
   selected: Role | undefined
 }
 
-const { roles } = useReferencielStore()
-
+const referenciel = useReferencielStore()
+const { roles } = toRefs(referenciel.$state);
 
 const { selected } = defineProps<Props>()
 const emit = defineEmits(['update:selected'])
 
-const selectedRole = ref(selected || roles[0])
+const selectedRole = ref(selected || roles.value[0])
+
+watch(() => roles.value, (val) => {
+  if (!selectedRole.value){
+    selectedRole.value = val[0]
+  }
+}, { deep: true })
 
 watch(selectedRole, (currentState) => {
   emit('update:selected', currentState)

@@ -12,12 +12,22 @@ export const getUsers = async () => {
     const res = await axios.get(`${api_url}/users`)
     return res.data;
 }
-export const getStudents = async (search: string | undefined) => {
-    const res = await axios.get(`${api_url}/students?search=${search}`)
+export const getStudents = async (search: string | undefined, page: number | undefined) => {
+    const options = {
+        params: {
+            search, page
+        }
+    }
+    const res = await axios.get(`${api_url}/students`, options)
     return res.data;
 }
-export const getEmployee = async (search: string | undefined) => {
-    const res = await axios.get(`${api_url}/employee?search=${search}`)
+export const getEmployee = async (search: string | undefined, page: number | undefined) => {
+    const options = {
+        params: {
+            search, page
+        }
+    }
+    const res = await axios.get(`${api_url}/employee`, options)
     return res.data;
 }
 

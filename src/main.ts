@@ -20,6 +20,9 @@ import './assets/styles/progress-bar.scss'
 import { createPinia } from "pinia";
 const pinia = createPinia()
 
+//Vee-validate
+import '@/plugins/vee-validate'
+
 createApp(App)
     .use(router)
     .use(pinia)

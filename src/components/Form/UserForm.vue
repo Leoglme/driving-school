@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="onSubmit"
+  <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors }"
         class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0">
     <div class="rounded-t bg-white mb-0 px-6 py-6">
       <div class="text-center flex justify-between">
@@ -23,12 +23,23 @@
               <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="first_name">
                 Prénom
               </label>
-              <input
+              <Field
+                  name="first_name"
                   id="first_name"
                   type="text"
-                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  :class="{'border-red-500 focus:border-red-500': errors.first_name}"
+                  class="border-transparent border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
+                  transition-all duration-150 focus:ring-0"
                   v-model="user.first_name"
               />
+              <svg v-if="errors.first_name" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                   viewBox="0 0 24 24"
+                   class="absolute text-red-600 fill-current" style="top: 36px; right: 12px;">
+                <path
+                    d="M11.953,2C6.465,2,2,6.486,2,12s4.486,10,10,10s10-4.486,10-10S17.493,2,11.953,2z M13,17h-2v-2h2V17z M13,13h-2V7h2V13z"></path>
+              </svg>
+              <span class="text-red-600">{{ errors.first_name }}</span>
             </div>
           </div>
           <div class="w-full lg:w-6/12 md:px-4">
@@ -36,12 +47,22 @@
               <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="last_name">
                 Nom
               </label>
-              <input
+              <Field
+                  name="last_name"
                   id="last_name"
                   type="text"
-                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  :class="{'border-red-500 focus:border-red-500': errors.last_name}"
+                  class="border-transparent border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
+                  transition-all duration-150 focus:ring-0"
                   v-model="user.last_name"
               />
+              <svg v-if="errors.last_name" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                   class="absolute text-red-600 fill-current" style="top: 36px; right: 12px;">
+                <path
+                    d="M11.953,2C6.465,2,2,6.486,2,12s4.486,10,10,10s10-4.486,10-10S17.493,2,11.953,2z M13,17h-2v-2h2V17z M13,13h-2V7h2V13z"></path>
+              </svg>
+              <span class="text-red-600">{{ errors.last_name }}</span>
             </div>
           </div>
         </div>
@@ -57,12 +78,22 @@
               <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="email">
                 Email
               </label>
-              <input
+              <Field
+                  name="email"
                   id="email"
                   type="email"
-                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  :class="{'border-red-500 focus:border-red-500': errors.email}"
+                  class="border-transparent border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
+                  transition-all duration-150 focus:ring-0"
                   v-model="user.email"
               />
+              <svg v-if="errors.email" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                   class="absolute text-red-600 fill-current" style="top: 36px; right: 12px;">
+                <path
+                    d="M11.953,2C6.465,2,2,6.486,2,12s4.486,10,10,10s10-4.486,10-10S17.493,2,11.953,2z M13,17h-2v-2h2V17z M13,13h-2V7h2V13z"></path>
+              </svg>
+              <span class="text-red-600">{{ errors.email }}</span>
             </div>
           </div>
           <div class="w-full lg:w-6/12 md:px-4">
@@ -71,18 +102,24 @@
                 Mot de passe
               </label>
               <div class="relative w-full">
-                <div class="absolute inset-y-0 right-0 flex items-center px-2">
+                <div style="height: 48px;" class="absolute inset-y-0 right-0 flex items-center px-2">
                   <input v-model="togglePassword" class="hidden js-password-toggle" id="toggle" type="checkbox"/>
                   <label
                       class="select-none bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer"
                       for="toggle">Afficher</label>
                 </div>
-                <input
+                <Field
                     id="password"
+                    name="password"
+                    :class="{'border-red-500 focus:border-red-500': errors.password}"
                     :type="togglePassword ? 'text' : 'password'"
-                    class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    class="border-transparent border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
+                  transition-all duration-150 focus:ring-0"
                     v-model="user.password"
                 />
+
+                <span class="text-red-600">{{ errors.password }}</span>
               </div>
             </div>
           </div>
@@ -94,7 +131,7 @@
         </div>
       </div>
     </div>
-  </form>
+  </Form>
 </template>
 
 <script lang="ts" setup>
@@ -105,6 +142,7 @@ import type { Notyf } from "notyf";
 import { computed, inject, ref } from "vue";
 import type { PropType } from "vue";
 import { useRouter } from "vue-router";
+import { Form, Field } from 'vee-validate';
 
 /*Refs*/
 const togglePassword = ref(false)
@@ -119,6 +157,14 @@ const { action, user } = defineProps({
   action: { type: String, default: "update" },
   user: { type: Object as PropType<User & { password: string }>, default: () => ({}) }
 });
+
+/*Computed*/
+const schema = {
+  email: 'required|email',
+  first_name: 'required',
+  last_name: 'required',
+  password: 'required'
+};
 
 /*Methods*/
 const disabled = (): boolean => {
