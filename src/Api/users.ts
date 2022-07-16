@@ -13,6 +13,9 @@ export const getUsers = async () => {
     return res.data;
 }
 export const getStudents = async (search: string | undefined, page: number | undefined) => {
+    if (search){
+        search = search.trim()
+    }
     const options = {
         params: {
             search, page
@@ -22,6 +25,9 @@ export const getStudents = async (search: string | undefined, page: number | und
     return res.data;
 }
 export const getEmployees = async (search: string | undefined, page: number | undefined) => {
+    if (search){
+        search = search.trim()
+    }
     const options = {
         params: {
             search, page
