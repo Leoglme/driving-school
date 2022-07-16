@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useReferencielStore } from "@/stores/referenciel";
+import { useReferencielStore } from "@/stores/referenciel.store";
 import { ref, toRefs, watch } from "vue";
 import type { Role } from "@/types/referenciel";
 

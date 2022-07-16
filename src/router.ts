@@ -16,6 +16,7 @@ import notFound from "@/views/notFound.vue"
 import login from "@/views/login.vue"
 import forgotPassword from "@/views/forgot-password.vue"
 import resetPassword from "@/views/reset-password.vue"
+import { useAuthStore } from "@/stores/auth.store";
 
 // routes
 const routes = [
@@ -86,7 +87,19 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
+    linkActiveClass: 'active',
     routes,
+});
+
+router.beforeEach(async (to) => {
+    // redirect to login page if not logged in and trying to access a restricted page
+    const publicPages = ['/login'];
+    const authRequired = !publicPages.includes(to.path);
+    const auth = useAuthStore();
+
+    if (authRequired && !auth.user) {
+        await router.push('/login')
+    }
 });
 
 export { router }

@@ -11,7 +11,7 @@ import { useProgress } from "@marcoschulte/vue3-progress";
 import { toRefs } from "vue";
 import type { ProgressFinisher } from '@marcoschulte/vue3-progress';
 import axios from "axios";
-import { useAppStore } from "@/stores/app";
+import { useAppStore } from "@/stores/app.store";
 
 const app = useAppStore()
 

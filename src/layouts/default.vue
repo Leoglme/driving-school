@@ -19,8 +19,8 @@ import { getRoles } from "@/Api/referenciel";
 import { toRefs } from "vue";
 import type { ProgressFinisher } from '@marcoschulte/vue3-progress';
 import axios from "axios";
-import { useAppStore } from "@/stores/app";
-import { useReferencielStore } from "@/stores/referenciel";
+import { useAppStore } from "@/stores/app.store";
+import { useReferencielStore } from "@/stores/referenciel.store";
 
 const app = useAppStore()
 const { setRoles} = useReferencielStore()

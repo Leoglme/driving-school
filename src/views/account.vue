@@ -13,28 +13,27 @@
 import UserForm from "@/components/Form/UserForm.vue"
 import CardProfile from "@/components/Card/CardProfile.vue"
 import { getUser } from "@/Api/users";
-import { ref } from "vue";
-import type { Ref } from "vue";
 import type { User } from "@/types/user";
 import type { Role } from "@/types/referenciel";
+import { useAuthStore } from "@/stores/auth.store";
 
 
 /*Refs*/
-const user: Ref<User | undefined> = ref()
-const id = '10'
-
+const { user, setUser }: { user: User | undefined, setUser: (user: User) => void } = useAuthStore()
 
 
 const setRole = (role: Role) => {
-  if(user.value) {
-    user.value.role = role
+  if (user) {
+    user.role = role
   }
 }
 
 const refresh = () => {
-  getUser(id).then(res => {
-    user.value = res
-  })
+  if (user){
+    getUser(user.id.toString()).then(res => {
+      setUser(res)
+    })
+  }
 }
 
 refresh()

@@ -11,7 +11,7 @@ import UserForm from "@/components/Form/UserForm.vue"
 import { ref } from "vue";
 import type { Ref } from "vue";
 import type { CreateUserCommand } from "@/types/user";
-import { useReferencielStore } from "@/stores/referenciel";
+import { useReferencielStore } from "@/stores/referenciel.store";
 
 /*Store*/
 const { roles } = useReferencielStore()

@@ -96,8 +96,8 @@
               <span class="text-red-600">{{ errors.email }}</span>
             </div>
           </div>
-          <div class="w-full lg:w-6/12 md:px-4">
-            <div class="relative w-full mb-3" v-if="action !== 'update'">
+          <div class="w-full lg:w-6/12 md:px-4" v-if="action !== 'update'">
+            <div class="relative w-full mb-3">
               <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="password">
                 Mot de passe
               </label>

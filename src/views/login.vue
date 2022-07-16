@@ -36,7 +36,6 @@
                   class="border border-gray-300 p-2.5 text-gray-900 sm:text-sm bg-gray-50
                   rounded focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  v-model="form.email"
               />
               <svg v-if="errors.email" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                    class="absolute text-red-600 fill-current" style="top: 38px; right: 12px;">
@@ -67,7 +66,6 @@
                     class="border border-gray-300 p-2.5 text-gray-900 sm:text-sm bg-gray-50
                   rounded focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    v-model="form.password"
                 />
 
                 <span class="text-red-600">{{ errors.password }}</span>
@@ -96,8 +94,18 @@
 
 <script lang="ts" setup>
 import { Form, Field } from 'vee-validate';
-import { ref } from "vue";
+import type { FormActions } from 'vee-validate';
+import { inject, ref } from "vue";
+import { login } from "@/Api/auth";
+import type { Notyf } from "notyf";
+import type { LoginCommand } from "@/types/auth";
+import { useAuthStore } from "@/stores/auth.store";
+import { useRouter } from "vue-router";
 
+/*Hooks*/
+const notyf: Notyf | undefined = inject('notyf')
+const authStore = useAuthStore();
+const router = useRouter()
 
 /*Computed*/
 const schema = {
@@ -106,15 +114,23 @@ const schema = {
 };
 
 /*Refs*/
-const form = ref({
-  email: '',
-  password: ''
-})
 const togglePassword = ref(false)
 
+
 /* Appel Api*/
-const onSubmit = () => {
-  console.log(form.value)
+const onSubmit = (values: LoginCommand, actions: FormActions<LoginCommand>) => {
+  login(values).then((response) => {
+    console.log(response.data)
+    notyf?.success('Connexion réussie, bienvenue !')
+    actions.resetForm()
+    authStore.setUser(response.data.user)
+    authStore.setToken(response.data.token.token)
+    router.push('/')
+  }).catch((err) => {
+    console.log(err)
+    const message = err.response?.data || 'Une erreur s\'est produite lors de la connexion.'
+    notyf?.error(message)
+  })
 }
 
 </script>

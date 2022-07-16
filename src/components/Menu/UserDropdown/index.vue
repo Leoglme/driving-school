@@ -4,7 +4,12 @@
        ref="btnDropdownRef"
        @click="toggleDropdown">
       <div class="items-center flex">
-        <span
+        <img v-if="user"
+            :src="user.avatar"
+            class="h-10 w-10 bg-blueGray-200 rounded-full cursor-pointer"
+            :alt="user.first_name + ' ' + user.last_name"
+        />
+        <span v-else
             class="cursor-pointer text-indigo-600 hover:text-indigo-500 w-10 h-10 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full">
           <i class="fa-regular fa-user"/>
         </span>
@@ -21,35 +26,39 @@
         Mon profile
       </a>
       <div class="h-0 my-2 border border-solid border-blueGray-100"/>
-      <a href="/logout"
-         class="hover:text-indigo-600 text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+      <button @click="logout"
+         class="hover:text-indigo-600 text-left text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
         Déconnexion
-      </a>
+      </button>
     </div>
   </div>
 </template>
 
-<script>
-import {createPopper} from "@popperjs/core";
+<script lang="ts" setup>
+import { createPopper } from "@popperjs/core";
+import { useAuthStore } from "@/stores/auth.store";
+import type { User } from "@/types/user";
+import { ref } from "vue";
 
-export default {
-  data() {
-    return {
-      dropdownPopoverShow: false
-    };
-  },
-  methods: {
-    toggleDropdown: function (event) {
-      event.preventDefault();
-      if (this.dropdownPopoverShow) {
-        this.dropdownPopoverShow = false;
-      } else {
-        this.dropdownPopoverShow = true;
-        createPopper(this.$refs.btnDropdownRef, this.$refs.popoverDropdownRef, {
-          placement: "bottom-start",
-        });
-      }
-    },
-  },
-};
+/*Refs*/
+const dropdownPopoverShow = ref(false)
+const btnDropdownRef = ref()
+const popoverDropdownRef = ref()
+
+/*Hooks*/
+const { user, logout }: { user: User | undefined, logout: () => void } = useAuthStore()
+
+
+/*Methods*/
+const toggleDropdown = (event: { preventDefault: () => void; }) => {
+  event.preventDefault();
+  if (dropdownPopoverShow.value) {
+    dropdownPopoverShow.value = false;
+  } else {
+    dropdownPopoverShow.value = true;
+    createPopper(btnDropdownRef.value, popoverDropdownRef.value, {
+      placement: "bottom-start",
+    });
+  }
+}
 </script>
