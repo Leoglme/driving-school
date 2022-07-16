@@ -38,11 +38,10 @@
                     name="password"
                     :type="togglePassword ? 'text' : 'password'"
                     placeholder="••••••••"
-                    :class="{'border border-red-500 focus:border-red-500': errors.password}"
-                    class="border border-gray-300 p-2.5 text-gray-900 sm:text-sm bg-gray-50
+                    :class="errors.password ? 'border border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'"
+                    class="border p-2.5 text-gray-900 sm:text-sm bg-gray-50
                   rounded focus:border-blue-600 focus:outline-none w-full ease-linear
-                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    v-model="form.password"
+                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
 
                 <span class="text-red-600">{{ errors.password }}</span>
@@ -63,14 +62,13 @@
                 </div>
                 <Field
                     id="password"
-                    name="password"
+                    name="confirmPassword"
                     :type="toggleConfirmPassword ? 'text' : 'password'"
                     placeholder="••••••••"
-                    :class="{'border border-red-500 focus:border-red-500': errors.confirmPassword}"
-                    class="border border-gray-300 p-2.5 text-gray-900 sm:text-sm bg-gray-50
+                    :class="errors.confirmPassword ? 'border border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'"
+                    class="border p-2.5 text-gray-900 sm:text-sm bg-gray-50
                   rounded focus:border-blue-600 focus:outline-none w-full ease-linear
-                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    v-model="form.confirmPassword"
+                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
 
                 <span class="text-red-600">{{ errors.confirmPassword }}</span>
@@ -95,8 +93,13 @@
 </template>
 
 <script lang="ts" setup>
+import type { FormActions } from 'vee-validate';
 import { Form, Field } from 'vee-validate';
-import { ref } from "vue";
+import { inject, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import type { ResetPasswordCommand } from "@/types/auth";
+import { resetPassword } from "@/Api/auth";
+import type { Notyf } from "notyf";
 
 
 /*Computed*/
@@ -105,18 +108,30 @@ const schema = {
   confirmPassword: 'required'
 };
 
-/*Refs*/
-const form = ref({
-  password: '',
-  confirmPassword: ''
-})
+/*Hooks*/
+const notyf: Notyf | undefined = inject('notyf')
+const route = useRoute()
+const router = useRouter()
 
+const token = route.query.token?.toString()
+/*Refs*/
 const togglePassword = ref(false)
 const toggleConfirmPassword = ref(false)
 
 /* Appel Api*/
-const onSubmit = () => {
-  console.log(form.value)
+const onSubmit = (values: ResetPasswordCommand, actions: FormActions<ResetPasswordCommand>) => {
+  if (token) {
+    resetPassword(token, values).then((response) => {
+      console.log(response.data)
+      notyf?.success('votre mot de passe à été réinitialiser.')
+      actions.resetForm()
+      router.push('/login')
+    }).catch((err) => {
+      console.log(err)
+      const message = err.response?.data || 'Une erreur s\'est produite lors de la réinitialisation.'
+      notyf?.error(message)
+    })
+  }
 }
 
 </script>

@@ -21,7 +21,8 @@
             Mot de passe oublié ?
           </h1>
           <p class="leading-6 leading-tight tracking-tight text-gray-900 dark:text-white">
-            Entrez l'adresse e-mail que vous avez utilisée lors de votre inscription et nous vous enverrons des instructions pour réinitialiser votre mot de passe.
+            Entrez l'adresse e-mail que vous avez utilisée lors de votre inscription et nous vous enverrons des
+            instructions pour réinitialiser votre mot de passe.
           </p>
           <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors, meta }" class="space-y-4 md:space-y-6">
             <div class="relative w-full mb-3">
@@ -33,11 +34,10 @@
                   id="email"
                   type="email"
                   placeholder="name@driving-school.fr"
-                  :class="{'border border-red-500 focus:border-red-500': errors.email}"
-                  class="border border-gray-300 p-2.5 text-gray-900 sm:text-sm bg-gray-50
+                  :class="errors.email ? 'border border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'"
+                  class="border p-2.5 text-gray-900 sm:text-sm bg-gray-50
                   rounded focus:border-blue-600 focus:outline-none w-full ease-linear
-                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  v-model="form.email"
+                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
               <svg v-if="errors.email" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                    class="absolute text-red-600 fill-current" style="top: 38px; right: 12px;">
@@ -66,7 +66,12 @@
 
 <script lang="ts" setup>
 import { Form, Field } from 'vee-validate';
-import { ref } from "vue";
+import type { FormActions } from 'vee-validate';
+import { inject } from "vue";
+import type { ForgotPasswordCommand } from "@/types/auth";
+import { forgotPassword } from "@/Api/auth";
+import type { Notyf } from "notyf";
+import { useRouter } from "vue-router";
 
 
 /*Computed*/
@@ -74,13 +79,21 @@ const schema = {
   email: 'required|email'
 };
 
-const form = ref({
-  email: ''
-})
+/*Hooks*/
+const notyf: Notyf | undefined = inject('notyf')
+const router = useRouter()
 
 /* Appel Api*/
-const onSubmit = () => {
-  console.log(form.value)
+const onSubmit = (values: ForgotPasswordCommand, actions: FormActions<ForgotPasswordCommand>) => {
+  forgotPassword(values).then((response) => {
+    console.log(response.data)
+    notyf?.success(response.data)
+    actions.resetForm()
+  }).catch((err) => {
+    console.log(err)
+    const message = err.response?.data || 'Une erreur s\'est produite lors de l\'envoie du mail.'
+    notyf?.error(message)
+  })
 }
 
 </script>

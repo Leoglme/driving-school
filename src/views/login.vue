@@ -32,10 +32,10 @@
                   id="email"
                   type="email"
                   placeholder="name@driving-school.fr"
-                  :class="{'border border-red-500 focus:border-red-500': errors.email}"
-                  class="border border-gray-300 p-2.5 text-gray-900 sm:text-sm bg-gray-50
+                  :class="errors.email ? 'border border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'"
+                  class="border p-2.5 text-gray-900 sm:text-sm bg-gray-50
                   rounded focus:border-blue-600 focus:outline-none w-full ease-linear
-                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
               <svg v-if="errors.email" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                    class="absolute text-red-600 fill-current" style="top: 38px; right: 12px;">
@@ -62,10 +62,10 @@
                     name="password"
                     :type="togglePassword ? 'text' : 'password'"
                     placeholder="••••••••"
-                    :class="{'border border-red-500 focus:border-red-500': errors.password}"
-                    class="border border-gray-300 p-2.5 text-gray-900 sm:text-sm bg-gray-50
+                    :class="errors.password ? 'border border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'"
+                    class="border p-2.5 text-gray-900 sm:text-sm bg-gray-50
                   rounded focus:border-blue-600 focus:outline-none w-full ease-linear
-                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
 
                 <span class="text-red-600">{{ errors.password }}</span>
