@@ -21,3 +21,11 @@ defineRule('email', (value: string) => {
 
     return true;
 });
+
+defineRule('confirmed', (value, [target]: string, ctx) => {
+    if (value === ctx.form[target]) {
+        return true;
+    }
+
+    return 'Les mots de passe ne correspondent pas';
+});

@@ -11,3 +11,6 @@ export const forgotPassword = async (command: ForgotPasswordCommand) => {
 export const resetPassword = async (token: string, command: ResetPasswordCommand) => {
     return await axios.post(`${api_url}/reset-password/${token}`, command);
 }
+export const createPassword = async (command: ResetPasswordCommand) => {
+    return await axios.put(`${api_url}/create-password`, command);
+}

@@ -105,7 +105,7 @@ import type { Notyf } from "notyf";
 /*Computed*/
 const schema = {
   password: 'required',
-  confirmPassword: 'required'
+  confirmPassword: 'required|confirmed:password'
 };
 
 /*Hooks*/

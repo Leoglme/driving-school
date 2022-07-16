@@ -16,6 +16,7 @@ import notFound from "@/views/notFound.vue"
 import login from "@/views/login.vue"
 import forgotPassword from "@/views/forgot-password.vue"
 import resetPassword from "@/views/reset-password.vue"
+import createPassword from "@/views/create-password.vue"
 import { useAuthStore } from "@/stores/auth.store";
 
 // routes
@@ -77,6 +78,10 @@ const routes = [
                 component: resetPassword,
             },
             {
+                path: "/create-password",
+                component: createPassword,
+            },
+            {
                 path: "/:pathMatch(.*)*",
                 name: "not-found",
                 component: notFound,
@@ -93,7 +98,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
     // redirect to login page if not logged in and trying to access a restricted page
-    const publicPages = ['/login', '/forgot-password', '/reset-password'];
+    const publicPages = ['/login', '/forgot-password', '/reset-password', '/create-password'];
     const authRequired = !publicPages.includes(to.path);
     const auth = useAuthStore();
 

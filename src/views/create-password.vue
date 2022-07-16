@@ -18,33 +18,12 @@
           class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
         <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
           <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-            Connectez-vous à votre compte
+            Création de mot de passe.
           </h1>
+          <p class="leading-6 leading-tight tracking-tight text-gray-900 dark:text-white">
+            Bienvenue sur driving school, créer un mot de passe pour accéder à l'application.
+          </p>
           <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors, meta }" class="space-y-4 md:space-y-6">
-
-            <!-- Email -->
-            <div class="relative w-full mb-3">
-              <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="email">
-                Email
-              </label>
-              <Field
-                  name="email"
-                  id="email"
-                  type="email"
-                  placeholder="name@driving-school.fr"
-                  :class="errors.email ? 'border border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'"
-                  class="border p-2.5 text-gray-900 sm:text-sm bg-gray-50
-                  rounded focus:border-blue-600 focus:outline-none w-full ease-linear
-                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-              <svg v-if="errors.email" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                   class="absolute text-red-600 fill-current" style="top: 38px; right: 12px;">
-                <path
-                    d="M11.953,2C6.465,2,2,6.486,2,12s4.486,10,10,10s10-4.486,10-10S17.493,2,11.953,2z M13,17h-2v-2h2V17z M13,13h-2V7h2V13z"></path>
-              </svg>
-              <span class="text-red-600">{{ errors.email }}</span>
-            </div>
-
             <!--Mot de passe-->
             <div class="relative w-full mb-3">
               <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="password">
@@ -52,10 +31,10 @@
               </label>
               <div class="relative w-full">
                 <div style="height: 42px;" class="absolute inset-y-0 right-0 flex items-center px-2">
-                  <input v-model="togglePassword" class="hidden js-password-toggle" id="toggle" type="checkbox"/>
+                  <input v-model="togglePassword" class="hidden js-password-toggle" id="togglePassword" type="checkbox"/>
                   <label
                       class="select-none bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer"
-                      for="toggle">Afficher</label>
+                      for="togglePassword">Afficher</label>
                 </div>
                 <Field
                     id="password"
@@ -72,18 +51,42 @@
               </div>
             </div>
 
+            <!-- Confirmation Mot de passe-->
+            <div class="relative w-full mb-3">
+              <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="password">
+                Confirmer votre mot de passe
+              </label>
+              <div class="relative w-full">
+                <div style="height: 42px;" class="absolute inset-y-0 right-0 flex items-center px-2">
+                  <input v-model="toggleConfirmPassword" class="hidden js-password-toggle" id="toggleConfirmPassword" type="checkbox"/>
+                  <label
+                      class="select-none bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer"
+                      for="toggleConfirmPassword">Afficher</label>
+                </div>
+                <Field
+                    id="password"
+                    name="confirmPassword"
+                    :type="toggleConfirmPassword ? 'text' : 'password'"
+                    placeholder="••••••••"
+                    :class="errors.confirmPassword ? 'border border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'"
+                    class="border p-2.5 text-gray-900 sm:text-sm bg-gray-50
+                  rounded focus:border-blue-600 focus:outline-none w-full ease-linear
+                  transition-all duration-150 focus:ring-0 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+
+                <span class="text-red-600">{{ errors.confirmPassword }}</span>
+              </div>
+            </div>
             <div class="flex items-center justify-between">
-              <router-link to="/forgot-password"
-                           class="link text-sm font-medium text-indigo-600 dark:text-indigo-500">
+              <router-link to="/forgot-password" class="link text-sm font-medium text-indigo-600 dark:text-indigo-500">
                 Mot de passe oublié ?
               </router-link>
             </div>
-
             <button :disabled="!meta.valid" type="submit"
                     class="w-full text-white bg-indigo-600 active:bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-indigo-300
                     font-medium rounded text-sm px-5 py-2.5 ease-linear transition-all duration-150
                     text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800">
-              Connexion
+              Confirmer
             </button>
           </Form>
         </div>
@@ -93,52 +96,45 @@
 </template>
 
 <script lang="ts" setup>
-import { Form, Field } from 'vee-validate';
 import type { FormActions } from 'vee-validate';
+import { Form, Field } from 'vee-validate';
 import { inject, ref } from "vue";
-import { login } from "@/Api/auth";
-import type { Notyf } from "notyf";
-import type { LoginCommand } from "@/types/auth";
-import { useAuthStore } from "@/stores/auth.store";
 import { useRouter } from "vue-router";
+import type { ResetPasswordCommand } from "@/types/auth";
+import { createPassword } from "@/Api/auth";
+import type { Notyf } from "notyf";
+import { useAuthStore } from "@/stores/auth.store";
 
-/*Hooks*/
-const notyf: Notyf | undefined = inject('notyf')
-const authStore = useAuthStore();
-const router = useRouter()
 
 /*Computed*/
 const schema = {
-  email: 'required|email',
-  password: 'required'
+  password: 'required',
+  confirmPassword: 'required|confirmed:password'
 };
+
+/*Hooks*/
+const notyf: Notyf | undefined = inject('notyf')
+const router = useRouter()
+
 
 /*Refs*/
 const togglePassword = ref(false)
-
+const toggleConfirmPassword = ref(false)
+const authStore = useAuthStore();
 
 /* Appel Api*/
-const onSubmit = (values: LoginCommand, actions: FormActions<LoginCommand>) => {
-  login(values).then((response) => {
-    console.log(response.data)
-
-    actions.resetForm()
-    const passwordNeedSet = response?.data?.passwordNeedSet
-
-    authStore.setToken(response.data.token.token)
-
-    if (passwordNeedSet) {
-      return router.push('/create-password')
-    }
-
-    notyf?.success('Connexion réussie, bienvenue !')
-    authStore.setUser(response.data.user)
-
-    router.push('/')
-  }).catch((err) => {
-    const message = err.response?.data || 'Une erreur s\'est produite lors de la connexion.'
-    notyf?.error(message)
-  })
+const onSubmit = (values: ResetPasswordCommand, actions: FormActions<ResetPasswordCommand>) => {
+    createPassword(values).then((response) => {
+      console.log(response.data)
+      actions.resetForm()
+      notyf?.success('Connexion réussie, bienvenue !')
+      authStore.setUser(response.data.user)
+      router.push('/')
+    }).catch((err) => {
+      console.log(err)
+      const message = err.response?.data || 'Une erreur s\'est produite lors de la création.'
+      notyf?.error(message)
+    })
 }
 
 </script>

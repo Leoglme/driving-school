@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import type { User } from "@/types/user";
 import { router } from "@/router";
+import axios from "axios";
 
 const userInLocalStorage = localStorage.getItem('user')
 const tokenInLocalStorage = localStorage.getItem('token')
@@ -18,6 +19,7 @@ export const useAuthStore = defineStore('authStore', {
         },
         setToken(token: string) {
             this.token = token;
+            axios.defaults.headers.common['Authorization'] = token;
             localStorage.setItem('token', JSON.stringify(token));
         },
         async logout() {
