@@ -1,0 +1,76 @@
+:root {
+  --fc-button-bg-color: transparent;
+  --fc-button-border-color: theme('colors.gray.100');
+  --fc-button-hover-bg-color: theme('colors.gray.100');
+  --fc-button-hover-border-color: theme('colors.gray.100');
+  --fc-button-text-color: theme('colors.gray.600');
+  --fc-button-active-bg-color: theme('colors.indigo.100');
+  --fc-button-active-border-color: theme('colors.indigo.100');
+  --fc-highlight-color: theme('colors.indigo.100');
+  --fc-today-bg-color: theme('colors.blue.100');
+  --fc-event-border-color: #2563eb;
+  --fc-event-bg-color: #2563eb;
+}
+.fc .fc-toolbar-title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.fc .fc-button-primary:not(:disabled):active, .fc .fc-button-primary:not(:disabled).fc-button-active {
+  color: theme('colors.indigo.600');
+}
+.fc-view-harness {
+  min-height: 55vh;
+  max-height: 80vh;
+  color: rgb(55, 65, 81);
+  background: #fff;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  box-shadow: rgb(255, 255, 255) 0 0 0 0, rgba(0, 0, 0, 0.05) 0 0 0 1px, rgba(0, 0, 0, 0.1) 0 1px 3px 0, rgba(0, 0, 0, 0.1) 0 1px 2px -1px
+}
+.fc-theme-standard td, .fc-theme-standard th {
+  border-color: rgb(229, 231, 235);
+}
+.fc .fc-daygrid-day-top {
+   flex-direction: row;
+}
+th.fc-col-header-cell {
+  padding: 8px 0;
+  font-weight: 600;
+}
+.fc-daygrid-day-top {
+  padding: 0.5rem;
+}
+
+.fc .fc-day-other .fc-daygrid-day-top {
+  opacity: 1;
+  color: rgb(107, 114, 128);
+}
+.fc-day-other {
+  background: rgb(249, 250, 251);
+}
+.fc-liquid-hack td, .fc-liquid-hack th {
+
+}
+.fc .fc-daygrid-day.fc-day-today {
+  background: #dbeafe;
+}
+td.fc-day-other {
+  position: inherit;
+}
+.fc-timeGridWeek-view .fc-col-header-cell{
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.fc-timeGridWeek-view .fc-col-header {
+  box-shadow: rgb(255, 255, 255) 0 0 0 0, rgba(0, 0, 0, 0.05) 0 0 0 1px, rgba(0, 0, 0, 0.1) 0 1px 3px 0, rgba(0, 0, 0, 0.1) 0 1px 2px -1px
+}
+.fc .fc-timegrid-slot {
+  height: 5em;
+}
+.fc-timeGridDay-view .fc-daygrid-day.fc-day-today, .fc-timeGridDay-view .fc-timegrid-col.fc-day-today {
+  background: transparent;
+}
+.fc .fc-scrollgrid-section > *, .fc-theme-standard .fc-scrollgrid, .fc-theme-standard .fc-list {
+  border: 0;
+}

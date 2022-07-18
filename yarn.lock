@@ -69,6 +69,16 @@
     "@fullcalendar/core" "~5.11.0"
     tslib "^2.1.0"
 
+"@headlessui/vue@^1.6.7":
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/@headlessui/vue/-/vue-1.6.7.tgz#433b86e5f86203606e7ac4851777173a327dd8c4"
+  integrity sha512-5sTCBpkUoFE7zhANn/6Z+pf3PUA7MD6BBaTsJcQybq9E4fnNiMM9agOJI9meXbtcawE6Dm8EeB5A8HAJEnZCbQ==
+
+"@heroicons/vue@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@heroicons/vue/-/vue-1.0.6.tgz#d8b90734b436eb5a87f40cc300b64a0fb0031f7f"
+  integrity sha512-ng2YcCQrdoQWEFpw+ipFl2rZo8mZ56v0T5+MyfQQvNqfKChwgP6DMloZLW+rl17GEcHkE3H82UTAMKBKZr4+WA==
+
 "@marcoschulte/vue3-progress@^0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@marcoschulte/vue3-progress/-/vue3-progress-0.0.6.tgz#91474e9be601e7504ab320f4ba23e9c574106ce4"

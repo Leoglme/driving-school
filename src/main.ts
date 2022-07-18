@@ -6,6 +6,7 @@ import { Notyf } from 'notyf';
 // styles
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import './assets/styles/index.css'
+import './assets/styles/full-calendar.scss'
 import 'notyf/notyf.min.css';
 
 // Create an instance of Notyf
