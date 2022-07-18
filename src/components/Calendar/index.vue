@@ -163,9 +163,10 @@ const props = defineProps({
 })
 
 /*Emits*/
-const emit = defineEmits(['addEvent', 'onSelect'])
+const emit = defineEmits(['addEvent', 'onSelect', 'eventDrop'])
 const addEvent = () => emit('addEvent')
 const onSelect = (arg: any) => emit('onSelect', arg)
+const eventDrop = (arg: any) => emit('eventDrop', arg)
 const eventClick = (arg: any) => {
   setDate(arg.event.start)
   onChangeView('timeGridDay')
@@ -181,6 +182,7 @@ const options = reactive({
   editable: true,
   select: onSelect,
   eventClick: eventClick,
+  eventDrop: eventDrop,
   selectable: true,
   headerToolbar: false
 })
