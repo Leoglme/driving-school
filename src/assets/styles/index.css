@@ -44,3 +44,9 @@ button[disabled] {
     padding: 8px;
     border-radius: 4px;
 }
+
+@media (min-width: 768px) {
+    .screen-modal {
+        min-width: 600px;
+    }
+}

@@ -15,13 +15,14 @@
         </svg>
       </button>
       <div class="py-6 px-6 lg:px-8">
-        <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Ajouter un rendez-vous</h3>
+        <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Détails du rendez-vous</h3>
         <Form @submit="onSubmit" class="space-y-6" :validation-schema="schema" v-slot="{ errors, meta }">
           <div class="relative w-full mb-3">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Titre
             </label>
             <Field
+                :value="event.title"
                 name="title"
                 id="title"
                 type="text"
@@ -37,34 +38,32 @@
             <label for="chef" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Chef (instructeur ou secrétaire)
             </label>
-            <UserAutoComplete @setUser="setChef" id="chef" :errors="errors.chef"/>
+            <UserAutoComplete :user="event.extendedProps.chef" @setUser="setChef" id="chef" :errors="errors.chef"/>
           </div>
 
           <div>
             <label for="user" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Utilisateur invité
             </label>
-            <UserAutoComplete @setUser="setUser" id="user" :errors="errors.user"/>
+            <UserAutoComplete :user="event.extendedProps.chef" @setUser="setUser" id="user" :errors="errors.user"/>
           </div>
           <div>
             <label for="user" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Time
             </label>
-
-
             <TimeSelection
-             @updateRange="updateRange"
-            :errors="errors"
-            :start="props.start"
-            :end="props.end"
-            id-start="start"
-            id-end="end"
+                :start="event.start"
+                :end="event.end"
+                :errors="errors"
+                id-start="start"
+                id-end="end"
             />
           </div>
           <SwitchGroup as="div" class="flex items-center justify-between">
     <span class="flex-grow flex flex-col">
       <SwitchLabel as="span" class="text-sm font-medium text-gray-900" passive>Toute la journée</SwitchLabel>
-      <SwitchDescription as="span" class="text-sm text-gray-500">Si votre rendez-vous n'a pas d'heure précise</SwitchDescription>
+      <SwitchDescription as="span"
+                         class="text-sm text-gray-500">Si votre rendez-vous n'a pas d'heure précise</SwitchDescription>
     </span>
             <Switch v-model="allDay"
                     :class="[allDay ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-0']">
@@ -72,10 +71,18 @@
                     :class="[allDay ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200']"/>
             </Switch>
           </SwitchGroup>
-          <button :disabled="!meta.valid" type="submit"
-                  class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-            Créer rendez-vous
-          </button>
+          <div class="flex items-center justify-between gap-2">
+            <button @click="onDelete" class="w-full text-white bg-red-700 hover:bg-red-800 focus:outline-none font-medium rounded-lg
+                  text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700">
+              Supprimer
+            </button>
+            <button :disabled="!meta.valid" type="submit"
+                    class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium
+                  rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700">
+              Sauvegarder
+            </button>
+          </div>
+
         </Form>
       </div>
     </div>
@@ -84,17 +91,17 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from "vue";
+import { defineEmits, inject, ref, watch } from "vue";
 import UserAutoComplete from "@/components/Input/UserAutoComplete.vue"
 import TimeSelection from "@/components/Input/TimeSelection.vue"
 import { Form, Field } from 'vee-validate';
-import type { FormActions } from 'vee-validate';
 import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 import type { CreateMeetCommand } from "@/types/meet";
 import type { Notyf } from "notyf";
+import { updateMeet } from "@/Api/meet";
+import type { PropType } from "vue";
+import type { EventApi } from "@fullcalendar/common";
 import { format } from "date-fns";
-import { createMeet } from "@/Api/meet";
-
 /*Computed*/
 const schema = {
   title: 'required',
@@ -107,52 +114,72 @@ const schema = {
 /*Hooks*/
 const notyf: Notyf | undefined = inject('notyf')
 
+/*Props*/
+const props = defineProps({
+  event: {
+    type: Object as PropType<EventApi | { allDay: boolean, start?: Date, end?: Date, extendedProps: Record<string, string> }>,
+    default: ({}) => {
+    }
+  }
+})
+
 /*Refs*/
 const show = ref(false)
 const setShow = ((value: boolean) => show.value = value)
-const allDay = ref(false)
-const chef = ref(0)
-const user = ref(0)
+const allDay = ref(props.event.allDay || false)
+const chef = ref(props.event.extendedProps?.chef?.id || 0)
+const user = ref(props.event.extendedProps?.user?.id || 0)
+
+
+watch(() => props.event.extendedProps, (val) => {
+  const chefId = val?.chef?.id
+  const userId = val?.user?.id
+  if (chefId) {
+    chef.value = chefId
+  }
+  if (userId) {
+    user.value = userId
+  }
+})
 
 
 /*Sets*/
 const setChef = (id: number) => chef.value = id
 const setUser = (id: number) => user.value = id
 
-/*Props*/
-const props = defineProps({
-  start: { type: String, default: new Date().toISOString() },
-  end: { type: String, default: new Date().toISOString() },
-})
-
 /*Emits*/
-const emit = defineEmits(['refresh', 'updateRange'])
+const emit = defineEmits(['onDelete', 'refresh'])
 
-const updateRange = (range: {start: string, end: string}) => emit('updateRange', range)
 
 /*Methods*/
-const onSubmit = (values: CreateMeetCommand, actions: FormActions<CreateMeetCommand>) => {
+const onDelete = () => emit('onDelete')
+const onSubmit = (values: CreateMeetCommand) => {
+  const start = new Date(props.event?.start || new Date())
+  const end = new Date(props.event?.end || start)
+
   const isoFormat = 'yyyy-MM-dd hh:mm:ss'
+  const meetId = props.event.extendedProps?.eventId
 
-  const command: CreateMeetCommand = {
-    ...values,
-    start: format(new Date(props.start), isoFormat),
-    end: format(new Date(props.end), isoFormat),
-    chef: chef.value,
-    user: user.value,
-    allDay: allDay.value
+  if (meetId) {
+    const command = {
+      ...values,
+      start: format(start.setHours(start.getHours() - 2), isoFormat),
+      end: format(end.setHours(end.getHours() - 2), isoFormat),
+      chef: chef.value,
+      user: user.value,
+      allDay: allDay.value
+    }
+
+    updateMeet(meetId, command).then(r => {
+      notyf?.success(`Le rendez-vous ${command.title} à été modifié.`)
+      setShow(false)
+      emit('refresh')
+    }).catch(err => {
+      console.log(err)
+      const message = err.response?.data || 'Une erreur s\'est produite lors de la modification.'
+      notyf?.error(message)
+    })
   }
-
-  createMeet(command).then(r => {
-    notyf?.success(`Le rendez-vous ${command.title} à été ajouté.`)
-    actions.resetForm()
-    setShow(false)
-    emit('refresh')
-  }).catch(err => {
-    console.log(err)
-    const message = err.response?.data || 'Une erreur s\'est produite lors de la création.'
-    notyf?.error(message)
-  })
 }
 
 

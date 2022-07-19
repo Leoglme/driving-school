@@ -8,8 +8,14 @@ export const getUser = async (id: string) => {
     return res.data;
 }
 
-export const getUsers = async () => {
-    const res = await axios.get(`${api_url}/users`)
+export const getUsers = async (search: string | undefined, limit: number | undefined) => {
+    if (search){
+        search = search.trim()
+    }
+    const options = {
+        params: { search, limit }
+    }
+    const res = await axios.get(`${api_url}/users`, options)
     return res.data;
 }
 export const getStudents = async (search: string | undefined, page: number | undefined) => {

@@ -51,7 +51,7 @@ watch(() => currentPage.value, () => {
 const openModal = (employee: User) => {
   currentEmployeeId.value = employee.id
   deleteEmployeeModal.value.content.title = "Confirmation de suppression"
-  deleteEmployeeModal.value.content.text = `Voulez-vous vraiment supprimer l'étudiant ${employee.first_name} ${employee.last_name} ?`
+  deleteEmployeeModal.value.content.text = `Voulez-vous vraiment supprimer l'employé ${employee.first_name} ${employee.last_name} ?`
   deleteEmployeeModal.value.setShow(true)
 }
 

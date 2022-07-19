@@ -1,6 +1,6 @@
 <template>
   <section class="mt-12">
-    <h2 class="font-semibold text-gray-900">Upcoming events</h2>
+    <h2 class="font-semibold text-gray-900">Participant</h2>
     <ol class="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
       <li class="py-4 sm:flex">
         <time datetime="2022-01-17" class="w-28 flex-none">Wed, Jan 12</time>

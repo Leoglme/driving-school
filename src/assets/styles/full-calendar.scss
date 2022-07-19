@@ -7,9 +7,9 @@
   --fc-button-active-bg-color: theme('colors.indigo.100');
   --fc-button-active-border-color: theme('colors.indigo.100');
   --fc-highlight-color: theme('colors.indigo.100');
-  --fc-today-bg-color: theme('colors.blue.100');
-  --fc-event-border-color: #2563eb;
-  --fc-event-bg-color: #2563eb;
+  --fc-today-bg-color: theme('colors.blue.50');
+  --fc-event-border-color: theme('colors.pink.100');
+  --fc-event-bg-color: theme('colors.pink.100');
 }
 .fc .fc-toolbar-title {
   font-weight: 600;
@@ -43,21 +43,16 @@ th.fc-col-header-cell {
 }
 
 .fc .fc-day-other .fc-daygrid-day-top {
-  opacity: 1;
   color: rgb(107, 114, 128);
 }
-.fc-day-other {
-  background: rgb(249, 250, 251);
-}
+
 .fc-liquid-hack td, .fc-liquid-hack th {
 
 }
 .fc .fc-daygrid-day.fc-day-today {
   background: #dbeafe;
 }
-td.fc-day-other {
-  position: inherit;
-}
+
 .fc-timeGridWeek-view .fc-col-header-cell{
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
@@ -73,4 +68,32 @@ td.fc-day-other {
 }
 .fc .fc-scrollgrid-section > *, .fc-theme-standard .fc-scrollgrid, .fc-theme-standard .fc-list {
   border: 0;
+}
+.fc-list-event {
+  cursor: pointer;
+}
+
+.fc .fc-daygrid-event-harness-abs {
+  a {
+    border: 0;
+    border-radius: 4px !important;
+  }
+}
+
+
+.fc-daygrid-event-harness, .fc-timegrid-event-harness {
+  a {
+    background: theme('colors.pink.50');
+    color: theme('colors.pink.700');
+    border-color: theme('colors.pink.700');
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 0 4px;
+    margin: 0 2px;
+
+    &:hover {
+      background: theme('colors.pink.100');
+    }
+  }
 }

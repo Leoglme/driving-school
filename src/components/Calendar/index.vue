@@ -127,11 +127,26 @@
         </transition>
       </Menu>
     </div>
+
   </header>
   <FullCalendar
       ref="fullCalendar"
-      :options="options"
-  />
+      :options="options">
+    <template v-slot:eventContent='arg'>
+      <span class="flex flex-wrap items-center">
+         <span class="mr-1 text-pink-700">{{ arg.timeText }}</span>
+      <b class="text-pink-700">{{ arg.event.title }}</b>
+      </span>
+
+      <br>
+      <div v-if="currentView() !== 'dayGridMonth' && currentView() !== 'timeGridWeek'">
+        <h2 class="font-semibold text-gray-900">
+          {{ arg.event.extendedProps.chef.first_name + ' ' + arg.event.extendedProps.chef.last_name }} - {{ arg.event.extendedProps.user.first_name + ' ' + arg.event.extendedProps.user.last_name }}
+        </h2>
+      </div>
+
+    </template>
+  </FullCalendar>
 </template>
 
 <script lang="ts" setup>
@@ -154,7 +169,7 @@ const viewsTitle = [
   { key: "dayGridMonth", value: "Mois" },
   { key: "listWeek", value: "Liste" },
 ]
-const initialView = 'timeGridDay'
+const initialView = 'dayGridMonth'
 
 /*Props*/
 const props = defineProps({
@@ -163,15 +178,11 @@ const props = defineProps({
 })
 
 /*Emits*/
-const emit = defineEmits(['addEvent', 'onSelect', 'eventDrop'])
+const emit = defineEmits(['addEvent', 'onSelect', 'eventDrop', 'eventClick'])
 const addEvent = () => emit('addEvent')
 const onSelect = (arg: any) => emit('onSelect', arg)
 const eventDrop = (arg: any) => emit('eventDrop', arg)
-const eventClick = (arg: any) => {
-  setDate(arg.event.start)
-  onChangeView('timeGridDay')
-}
-
+const eventClick = (arg: any) => emit('eventClick', arg)
 
 /*Hooks*/
 const options = reactive({
@@ -179,6 +190,7 @@ const options = reactive({
   initialView,
   events: props.events,
   locale: 'fr',
+  timeZone: 'UTC',
   editable: true,
   select: onSelect,
   eventClick: eventClick,
@@ -192,6 +204,15 @@ const fullCalendar = ref()
 const initialViewText = ref(viewsTitle.find(e => e.key === initialView)?.value)
 
 /*Methods*/
+const currentView = () => {
+  const calendarApi = fullCalendar.value?.getApi()
+  if (calendarApi) {
+    return calendarApi.view.type
+  }
+  return initialView
+}
+
+
 const getTitle = () => {
   const calendarApi = fullCalendar.value?.getApi()
   if (calendarApi) {
@@ -245,6 +266,10 @@ const setDate = (date: Date = props.selectedDay) => {
 
 watch(() => props.selectedDay, () => {
   setDate()
+}, { deep: true })
+
+watch(() => props.events, (val) => {
+  options.events = val
 }, { deep: true })
 
 /*Lifecycle*/
