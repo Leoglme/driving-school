@@ -104,7 +104,7 @@ const startPage = computed(() => {
   } else if (page.value === props.totalPages) {
     return props.totalPages - maxVisibleButtons + 1;
   }
-
+  console.log("start page", page.value - 1)
   return page.value - 1;
 })
 
@@ -113,10 +113,13 @@ const pages = computed(() => {
   const range = [];
 
   for (let i = startPage.value; i <= endPage.value; i += 1) {
-    range.push({
-      name: i,
-      isDisabled: i === page.value
-    });
+    if(i > 0) {
+      range.push({
+        name: i,
+        isDisabled: i === page.value
+      });
+    }
+
   }
   return range;
 })

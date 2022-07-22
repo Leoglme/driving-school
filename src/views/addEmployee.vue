@@ -24,7 +24,8 @@ const user: Ref<CreateUserCommand | {}> = ref({
   first_name: '',
   last_name: '',
   password: '',
-  email: ''
+  email: '',
+  hours_remaining: 0
 })
 
 </script>

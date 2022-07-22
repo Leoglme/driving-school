@@ -34,8 +34,8 @@ import MonthCalendar from "@/components/Calendar/MonthCalendar.vue"
 import AddMeetModal from "@/components/Modal/AddMeetModal.vue"
 import ConfirmModal from "@/components/Modal/ConfirmModal.vue"
 import MeetModal from "@/components/Modal/MeetModal.vue"
-import { inject, reactive, ref } from "vue";
-import { format, parseISO, startOfToday } from "date-fns";
+import { inject, ref } from "vue";
+import { format, startOfToday, subHours } from "date-fns";
 import type { Ref } from "vue";
 import type { Meet } from "@/types/meet";
 import { deleteMeet, getMeets, updateMeet } from "@/Api/meet";
@@ -46,9 +46,9 @@ import type { Notyf } from "notyf";
 const meets: Ref<Meet[]> = ref([])
 const currentEvent: Ref<EventDef | { title?: string, extendedProps?: Record<string, any> }> = ref({})
 const selectedDay = ref(startOfToday())
-const todayIso = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().toString()
-const start = ref(todayIso)
-const end = ref(todayIso)
+const today = new Date().toString()
+const start = ref(today)
+const end = ref(today)
 
 const actionDates = ref([] as string[])
 const eventModal = ref()

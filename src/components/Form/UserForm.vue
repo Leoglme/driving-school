@@ -27,9 +27,9 @@
                   name="first_name"
                   id="first_name"
                   type="text"
-                  :class="{'border-2 border-red-500 focus:border-red-500': errors.first_name}"
-                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
-                  rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
+                  :class="errors.first_name ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
+                  class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                   v-model="user.first_name"
               />
@@ -51,9 +51,9 @@
                   name="last_name"
                   id="last_name"
                   type="text"
-                  :class="{'border-2 border-red-500 focus:border-red-500': errors.last_name}"
-                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
-                  rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
+                  :class="errors.last_name ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
+                  class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                   v-model="user.last_name"
               />
@@ -82,9 +82,9 @@
                   name="email"
                   id="email"
                   type="email"
-                  :class="{'border-2 border-red-500 focus:border-red-500': errors.email}"
-                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
-                  rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
+                  :class="errors.email ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
+                  class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                   v-model="user.email"
               />
@@ -111,10 +111,10 @@
                 <Field
                     id="password"
                     name="password"
-                    :class="{'border-2 border-red-500 focus:border-red-500': errors.password}"
                     :type="togglePassword ? 'text' : 'password'"
-                    class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
-                  rounded text-sm shadow focus:border-blue-600 focus:outline-none w-full ease-linear
+                    :class="errors.password ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
+                    class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                     v-model="user.password"
                 />
@@ -126,6 +126,30 @@
           <div class="w-full lg:w-6/12 md:px-4">
             <div class="relative w-full mb-3">
               <RoleSelect v-model:selected="role"/>
+            </div>
+          </div>
+          <div class="w-full lg:w-6/12 md:px-4" v-if="role && role.name === 'Student' && user.driving_time">
+            <div class="relative w-full mb-3">
+              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="hours_remaining">
+                Heures de conduite disponible
+              </label>
+              <Field
+                  name="hours_remaining"
+                  id="hours_remaining"
+                  type="number"
+                  v-model="user.driving_time.hours_remaining"
+                  :class="errors.hours_remaining ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
+                  class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
+                  transition-all duration-150 focus:ring-0"
+              />
+              <svg v-if="errors.hours_remaining" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                   viewBox="0 0 24 24"
+                   class="absolute text-red-600 fill-current" style="top: 36px; right: 12px;">
+                <path
+                    d="M11.953,2C6.465,2,2,6.486,2,12s4.486,10,10,10s10-4.486,10-10S17.493,2,11.953,2z M13,17h-2v-2h2V17z M13,13h-2V7h2V13z"></path>
+              </svg>
+              <span class="text-red-600">{{ errors.hours_remaining }}</span>
             </div>
           </div>
         </div>
@@ -148,7 +172,7 @@ import type { Role } from "@/types/referenciel";
 /*Props*/
 const { action, user } = defineProps({
   action: { type: String, default: "update" },
-  user: { type: Object as PropType<User & { password: string }>, default: () => ({}) }
+  user: { type: Object as PropType<User & { password: string, hours_remaining: number }>, default: () => ({}) }
 });
 
 /*Refs*/
@@ -165,12 +189,14 @@ const router = useRouter()
 const schema = {
   email: 'required|email',
   first_name: 'required',
+  hours_remaining: 'required',
   last_name: 'required'
 };
 
 const createSchema = {
   email: 'required|email',
   first_name: 'required',
+  hours_remaining: 'required',
   last_name: 'required',
   password: 'required'
 }
@@ -203,13 +229,13 @@ const fullName = computed(() => user.first_name + " " + user.last_name)
 
 
 /* Appel Api*/
-const onSubmit = () => {
-  console.log(role.value)
+const onSubmit = (values: Record<string, any>) => {
   const command: UserCommand = {
     role_id: role.value.id,
     first_name: user.first_name,
     last_name: user.last_name,
-    email: user.email
+    email: user.email,
+    hours_remaining: values.hours_remaining
   }
 
   if (action === 'update') {

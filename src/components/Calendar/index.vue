@@ -141,7 +141,8 @@
       <br>
       <div v-if="currentView() !== 'dayGridMonth' && currentView() !== 'timeGridWeek'">
         <h2 class="font-semibold text-gray-900">
-          {{ arg.event.extendedProps.chef.first_name + ' ' + arg.event.extendedProps.chef.last_name }} - {{ arg.event.extendedProps.user.first_name + ' ' + arg.event.extendedProps.user.last_name }}
+          {{ arg.event.extendedProps.chef.first_name + ' ' + arg.event.extendedProps.chef.last_name }} -
+          {{ arg.event.extendedProps.user.first_name + ' ' + arg.event.extendedProps.user.last_name }}
         </h2>
       </div>
 
@@ -170,6 +171,7 @@ const viewsTitle = [
   { key: "listWeek", value: "Liste" },
 ]
 const initialView = 'dayGridMonth'
+const timeZone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 
 /*Props*/
 const props = defineProps({
@@ -190,7 +192,7 @@ const options = reactive({
   initialView,
   events: props.events,
   locale: 'fr',
-  timeZone: 'UTC',
+  timeZone,
   editable: true,
   select: onSelect,
   eventClick: eventClick,

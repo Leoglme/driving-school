@@ -51,18 +51,13 @@
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
             {{ format(new Date(user.created_at), 'dd/MM/yyyy - HH:mm') }}
           </td>
-          <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2"
-              v-if="!hideHour">
+          <td class="border-t-0 pl-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2"
+              v-if="!hideHour && user.driving_time">
             <div class="flex items-center">
-              <span class="mr-2">60%</span>
-              <div class="relative w-full">
-                <div class="overflow-hidden h-2 text-xs flex rounded bg-red-200">
-                  <div style="width: 60%;"
-                       class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"
-                  />
-                </div>
-              </div>
+              <span class="mr-2">{{ user.driving_time.hours_done }} / {{ user.driving_time.hours_total }}</span>
+              <ProgressBar :percentage="drivingTimePercentage(user.driving_time)"/>
             </div>
+
           </td>
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2 text-right">
             <button @click="onDelete(user)"
@@ -87,23 +82,41 @@ import { format } from 'date-fns'
 import type { User } from "@/types/user";
 import NoResult from "@/components/State/NoResult.vue"
 import BadgeRole from "@/components/Common/BadgeRole.vue"
+import ProgressBar from "@/components/Feedback/ProgressBar.vue"
+import { defineEmits } from 'vue'
+import type { DrivingTime } from "@/types/driving-time";
 
+/*Types*/
 interface Props {
   users: User[]
   hideHour: boolean
   title: string
 }
 
-import { defineEmits } from 'vue'
-
+/*Emits*/
 const emit = defineEmits<{
   (e: 'delete', user: User): void
 }>()
 
+/*Api methods*/
 const onDelete = (user: User) => emit('delete', user)
 
 
+/*Data*/
 const fields = ['Nom', 'email', 'role', 'Date création']
+
+/*Props*/
 const { users, hideHour, title } = defineProps<Props>()
 
+/*Methods*/
+const percentage = (partialValue: number, totalValue: number): number => {
+  return ((100 * partialValue) / totalValue) || 0;
+}
+
+const drivingTimePercentage = (driving_time: DrivingTime): number => {
+  const hours_done = driving_time.hours_done;
+  const hours_total = driving_time.hours_total;
+
+  return percentage(hours_done, hours_total)
+}
 </script>

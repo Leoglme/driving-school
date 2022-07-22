@@ -11,33 +11,19 @@
             />
           </div>
         </div>
-        <div class="w-full px-4 text-center mt-20">
-          <div class="flex justify-center py-4 lg:pt-4 pt-8">
-            <div class="mr-4 p-3 text-center">
-              <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-                22
-              </span>
-              <span class="text-sm text-blueGray-400">Friends</span>
-            </div>
-            <div class="mr-4 p-3 text-center">
-              <span
-                  class="text-xl font-bold block uppercase tracking-wide text-blueGray-600"
-              >
-                10
-              </span>
-              <span class="text-sm text-blueGray-400">Photos</span>
-            </div>
-            <div class="lg:mr-4 p-3 text-center">
-              <span
-                  class="text-xl font-bold block uppercase tracking-wide text-blueGray-600"
-              >
-                89
-              </span>
-              <span class="text-sm text-blueGray-400">Comments</span>
-            </div>
-          </div>
-        </div>
       </div>
+
+
+
+      <div class="mt-20 px-4 flex flex-col items-center" v-if="showProgress">
+        <span class="text-sm text-blueGray-400">Heures de conduite</span>
+        <div class="flex items-center">
+          <span class="mr-2">{{ user.driving_time.hours_done }} / {{ user.driving_time.hours_total }}</span>
+          <ProgressBar class="flex-1" :percentage="percentage"/>
+        </div>
+
+      </div>
+
       <div class="text-center mt-4">
         <h3 class="text-xl font-semibold leading-normal mb-2 text-blueGray-700">
           {{ fullName }}
@@ -59,11 +45,15 @@
 <script lang="ts" setup>
 import type { User } from "@/types/user";
 import { computed } from "vue";
+import ProgressBar from "@/components/Feedback/ProgressBar.vue"
 import BadgeRole from "@/components/Common/BadgeRole.vue"
+
 interface Props {
   user: User
 }
 
 const { user } = defineProps<Props>()
+const showProgress = user.role && user.role.name === "Student"
+const percentage = computed(() => (showProgress ? (((100 * user.driving_time.hours_done) / user.driving_time.hours_total) || 0) : 0))
 const fullName = computed(() => user.first_name + " " + user.last_name)
 </script>

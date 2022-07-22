@@ -1,5 +1,6 @@
 <template>
-  <v-date-picker v-model="range" mode="dateTime" is24hr is-range>
+
+  <v-date-picker timezone="Europe/Amsterdam" v-model="range" mode="dateTime" is24hr is-range>
     <template v-slot="{ inputValue, inputEvents }">
       <div class="flex justify-center items-center">
         <Field
@@ -48,11 +49,14 @@
 import { Field } from 'vee-validate';
 import { defineEmits, ref, watch } from "vue";
 
+/*Data*/
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
 /*Props*/
 const props = defineProps({
   errors: { type: Object, default: () => ({}) },
-  start: { type: String, default: new Date().toISOString() },
-  end: { type: String, default: new Date().toISOString() },
+  start: { type: String, default: new Date().toString() },
+  end: { type: String, default: new Date().toString() },
   idStart: { type: String, default: null },
   idEnd: { type: String, default: null }
 })
@@ -67,10 +71,14 @@ const range = ref({
 const emit = defineEmits(['updateRange'])
 
 watch(() => range.value, (val) => {
+
+
   const r = {
-    start: new Date(val.start).toISOString().toString(),
-    end: new Date(val.end).toISOString().toString()
+    start: new Date(val.start).toString(),
+    end: new Date(val.end).toString()
   }
+  console.log(val.start)
+
   emit('updateRange', r)
-}, {deep: true})
+}, { deep: true })
 </script>

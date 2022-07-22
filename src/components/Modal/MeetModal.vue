@@ -38,22 +38,25 @@
             <label for="chef" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Chef (instructeur ou secrétaire)
             </label>
-            <UserAutoComplete :user="event.extendedProps.chef" @setUser="setChef" id="chef" :errors="errors.chef"/>
+            <UserAutoComplete v-if="event.extendedProps" :user="event.extendedProps.chef" @setUser="setChef" id="chef"
+                              :errors="errors.chef"/>
           </div>
 
           <div>
             <label for="user" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Utilisateur invité
             </label>
-            <UserAutoComplete :user="event.extendedProps.chef" @setUser="setUser" id="user" :errors="errors.user"/>
+            <UserAutoComplete v-if="event.extendedProps" :user="event.extendedProps.user" @setUser="setUser" id="user"
+                              :errors="errors.user"/>
           </div>
           <div>
-            <label for="user" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+            <label for="time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Time
             </label>
             <TimeSelection
-                :start="event.start"
-                :end="event.end"
+                @updateRange="updateRange"
+                :start="start"
+                :end="end"
                 :errors="errors"
                 id-start="start"
                 id-end="end"
@@ -98,10 +101,11 @@ import { Form, Field } from 'vee-validate';
 import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 import type { CreateMeetCommand } from "@/types/meet";
 import type { Notyf } from "notyf";
-import { updateMeet } from "@/Api/meet";
 import type { PropType } from "vue";
 import type { EventApi } from "@fullcalendar/common";
-import { format } from "date-fns";
+import { format, subHours } from "date-fns";
+import { updateMeet } from "@/Api/meet";
+
 /*Computed*/
 const schema = {
   title: 'required',
@@ -124,6 +128,11 @@ const props = defineProps({
 })
 
 /*Refs*/
+const date_start = props.event?.start || new Date()
+const date_end = props.event?.start || new Date()
+
+const start = ref(new Date(date_start.getTime() - (date_start.getTimezoneOffset() * 60000)).toISOString().toString())
+const end = ref(new Date(date_end.getTime() - (date_end.getTimezoneOffset() * 60000)).toISOString().toString())
 const show = ref(false)
 const setShow = ((value: boolean) => show.value = value)
 const allDay = ref(props.event.allDay || false)
@@ -131,6 +140,15 @@ const chef = ref(props.event.extendedProps?.chef?.id || 0)
 const user = ref(props.event.extendedProps?.user?.id || 0)
 
 
+watch(() => props.event, (val) => {
+  start.value = subHours(val?.start || new Date(), 2).toString()
+  if (val?.end) {
+    end.value = subHours(val?.end, 2).toString()
+  } else {
+    end.value = start.value
+  }
+
+})
 watch(() => props.event.extendedProps, (val) => {
   const chefId = val?.chef?.id
   const userId = val?.user?.id
@@ -150,12 +168,13 @@ const setUser = (id: number) => user.value = id
 /*Emits*/
 const emit = defineEmits(['onDelete', 'refresh'])
 
-
 /*Methods*/
+const updateRange = (range: { start: string, end: string }) => {
+  start.value = range.start
+  end.value = range.end
+}
 const onDelete = () => emit('onDelete')
 const onSubmit = (values: CreateMeetCommand) => {
-  const start = new Date(props.event?.start || new Date())
-  const end = new Date(props.event?.end || start)
 
   const isoFormat = 'yyyy-MM-dd hh:mm:ss'
   const meetId = props.event.extendedProps?.eventId
@@ -163,8 +182,8 @@ const onSubmit = (values: CreateMeetCommand) => {
   if (meetId) {
     const command = {
       ...values,
-      start: format(start.setHours(start.getHours() - 2), isoFormat),
-      end: format(end.setHours(end.getHours() - 2), isoFormat),
+      start: format(new Date(start.value), isoFormat),
+      end: format(new Date(end.value), isoFormat),
       chef: chef.value,
       user: user.value,
       allDay: allDay.value
