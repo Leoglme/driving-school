@@ -50,3 +50,9 @@ button[disabled] {
         min-width: 600px;
     }
 }
+
+
+/*Inputs*/
+input:disabled, textarea:disabled, select:disabled {
+    background: rgba(255,255,255,0.6);
+}

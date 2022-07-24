@@ -23,7 +23,7 @@
           border-r-0 whitespace-nowrap font-semibold text-left" v-if="!hideHour">
             Heures
           </th>
-          <th class="bg-blueGray-50 text-blueGray-500 border-blueGray-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+          <th v-if="authorize" class="bg-blueGray-50 text-blueGray-500 border-blueGray-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
           />
         </tr>
         </thead>
@@ -51,7 +51,7 @@
           <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
             {{ format(new Date(user.created_at), 'dd/MM/yyyy - HH:mm') }}
           </td>
-          <td class="border-t-0 pl-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2"
+          <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2"
               v-if="!hideHour && user.driving_time">
             <div class="flex items-center">
               <span class="mr-2">{{ user.driving_time.hours_done }} / {{ user.driving_time.hours_total }}</span>
@@ -59,7 +59,7 @@
             </div>
 
           </td>
-          <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2 text-right">
+          <td v-if="user.id !== currentUser.id && authorize" class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2 text-right">
             <button @click="onDelete(user)"
                     class="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button">
@@ -83,8 +83,9 @@ import type { User } from "@/types/user";
 import NoResult from "@/components/State/NoResult.vue"
 import BadgeRole from "@/components/Common/BadgeRole.vue"
 import ProgressBar from "@/components/Feedback/ProgressBar.vue"
-import { defineEmits } from 'vue'
+import { defineEmits, ref } from 'vue'
 import type { DrivingTime } from "@/types/driving-time";
+import { useAuthStore } from "@/stores/auth.store";
 
 /*Types*/
 interface Props {
@@ -93,6 +94,12 @@ interface Props {
   title: string
 }
 
+/*Store*/
+const auth = useAuthStore()
+
+/*Refs*/
+const currentUser = ref(auth.user || {})
+const authorize = currentUser.value.role?.name === 'Secretary' || currentUser.value.role?.name === 'Admin'
 /*Emits*/
 const emit = defineEmits<{
   (e: 'delete', user: User): void

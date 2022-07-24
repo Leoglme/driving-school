@@ -13,8 +13,13 @@ export const getMeetByUserId = async (userId: number) => {
     return res.data;
 }
 
-export const getMeets = async () => {
-    const res = await axios.get(`${api_url}/meets`)
+export const getMeets = async (user_id: number | undefined) => {
+    const options = {
+        params: {
+            user_id
+        }
+    }
+    const res = await axios.get(`${api_url}/meets`, options)
     return res.data;
 }
 

@@ -4,6 +4,7 @@
   </label>
 
   <select id="role_id"
+          :disabled="disabled"
           name="selectedRole"
           v-model="selectedRole"
           class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
@@ -17,22 +18,23 @@
 <script lang="ts" setup>
 import { useReferencielStore } from "@/stores/referenciel.store";
 import { ref, toRefs, watch } from "vue";
+import type { PropType } from "vue";
 import type { Role } from "@/types/referenciel";
 
-interface Props {
-  selected: Role | undefined
-}
 
 const referenciel = useReferencielStore()
 const { roles } = toRefs(referenciel.$state);
 
-const { selected } = defineProps<Props>()
+const { selected, disabled } = defineProps({
+  selected: { type: Object as PropType<Role | undefined>, default: undefined },
+  disabled: { type: Boolean, default: false }
+})
 const emit = defineEmits(['update:selected'])
 
 const selectedRole = ref(selected || roles.value[0])
 
 watch(() => roles.value, (val) => {
-  if (!selectedRole.value){
+  if (!selectedRole.value) {
     selectedRole.value = val[0]
   }
 }, { deep: true })

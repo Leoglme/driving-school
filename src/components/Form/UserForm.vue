@@ -125,15 +125,17 @@
           </div>
           <div class="w-full lg:w-6/12 md:px-4">
             <div class="relative w-full mb-3">
-              <RoleSelect v-model:selected="role"/>
+              <RoleSelect :disabled="!authorize" v-model:selected="role"/>
             </div>
           </div>
+
           <div class="w-full lg:w-6/12 md:px-4" v-if="role && role.name === 'Student' && user.driving_time">
             <div class="relative w-full mb-3">
               <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="hours_remaining">
                 Heures de conduite disponible
               </label>
               <Field
+                  :disabled="!authorize"
                   name="hours_remaining"
                   id="hours_remaining"
                   type="number"
@@ -143,12 +145,6 @@
                   rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
               />
-              <svg v-if="errors.hours_remaining" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                   viewBox="0 0 24 24"
-                   class="absolute text-red-600 fill-current" style="top: 36px; right: 12px;">
-                <path
-                    d="M11.953,2C6.465,2,2,6.486,2,12s4.486,10,10,10s10-4.486,10-10S17.493,2,11.953,2z M13,17h-2v-2h2V17z M13,13h-2V7h2V13z"></path>
-              </svg>
               <span class="text-red-600">{{ errors.hours_remaining }}</span>
             </div>
           </div>
@@ -168,6 +164,7 @@ import type { PropType } from "vue";
 import { useRouter } from "vue-router";
 import { Form, Field } from 'vee-validate';
 import type { Role } from "@/types/referenciel";
+import { useAuthStore } from "@/stores/auth.store";
 
 /*Props*/
 const { action, user } = defineProps({
@@ -175,9 +172,14 @@ const { action, user } = defineProps({
   user: { type: Object as PropType<User & { password: string, hours_remaining: number }>, default: () => ({}) }
 });
 
+/*Store*/
+const auth = useAuthStore()
+
 /*Refs*/
 const togglePassword = ref(false)
 const role = ref(user.role)
+const currentUser = ref(auth.user || {})
+const authorize = currentUser.value.role?.name === 'Secretary' || currentUser.value.role?.name === 'Admin'
 
 /*Hooks*/
 const notyf: Notyf | undefined = inject('notyf')

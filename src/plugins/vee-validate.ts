@@ -1,7 +1,7 @@
 import { defineRule } from 'vee-validate';
 
-defineRule('required', (value: string) => {
-    if (!value || !value.length) {
+defineRule('required', (value: string | number) => {
+    if (!value || !value.toString().length) {
         return 'Ce champ est requis';
     }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-xl rounded-lg mt-16">
     <div class="px-6">
-      <div class="flex flex-wrap justify-center">
+      <div class="flex flex-wrap justify-center mb-20">
         <div class="w-full px-4 flex justify-center">
           <div class="relative">
             <img
@@ -15,10 +15,10 @@
 
 
 
-      <div class="mt-20 px-4 flex flex-col items-center" v-if="showProgress">
-        <span class="text-sm text-blueGray-400">Heures de conduite</span>
-        <div class="flex items-center">
-          <span class="mr-2">{{ user.driving_time.hours_done }} / {{ user.driving_time.hours_total }}</span>
+      <div class="px-4 flex flex-col items-center" v-if="showProgress">
+        <span class="mb-2">Heures de conduite</span>
+        <div class="flex items-center w-full">
+          <span class="mr-2 text-sm">{{ user.driving_time.hours_done }} / {{ user.driving_time.hours_total }}</span>
           <ProgressBar class="flex-1" :percentage="percentage"/>
         </div>
 
@@ -49,11 +49,13 @@ import ProgressBar from "@/components/Feedback/ProgressBar.vue"
 import BadgeRole from "@/components/Common/BadgeRole.vue"
 
 interface Props {
-  user: User
+  user: User,
+  percentage: number
 }
 
-const { user } = defineProps<Props>()
+const { user, percentage } = defineProps<Props>()
 const showProgress = user.role && user.role.name === "Student"
-const percentage = computed(() => (showProgress ? (((100 * user.driving_time.hours_done) / user.driving_time.hours_total) || 0) : 0))
 const fullName = computed(() => user.first_name + " " + user.last_name)
+
+
 </script>

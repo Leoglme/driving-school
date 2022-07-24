@@ -31,7 +31,8 @@
               </label>
               <div class="relative w-full">
                 <div style="height: 42px;" class="absolute inset-y-0 right-0 flex items-center px-2">
-                  <input v-model="togglePassword" class="hidden js-password-toggle" id="togglePassword" type="checkbox"/>
+                  <input v-model="togglePassword" class="hidden js-password-toggle" id="togglePassword"
+                         type="checkbox"/>
                   <label
                       class="select-none bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer"
                       for="togglePassword">Afficher</label>
@@ -58,7 +59,8 @@
               </label>
               <div class="relative w-full">
                 <div style="height: 42px;" class="absolute inset-y-0 right-0 flex items-center px-2">
-                  <input v-model="toggleConfirmPassword" class="hidden js-password-toggle" id="toggleConfirmPassword" type="checkbox"/>
+                  <input v-model="toggleConfirmPassword" class="hidden js-password-toggle" id="toggleConfirmPassword"
+                         type="checkbox"/>
                   <label
                       class="select-none bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer"
                       for="toggleConfirmPassword">Afficher</label>
@@ -104,6 +106,7 @@ import type { ResetPasswordCommand } from "@/types/auth";
 import { createPassword } from "@/Api/auth";
 import type { Notyf } from "notyf";
 import { useAuthStore } from "@/stores/auth.store";
+import axios from "axios";
 
 
 /*Computed*/
@@ -124,17 +127,18 @@ const authStore = useAuthStore();
 
 /* Appel Api*/
 const onSubmit = (values: ResetPasswordCommand, actions: FormActions<ResetPasswordCommand>) => {
-    createPassword(values).then((response) => {
-      console.log(response.data)
-      actions.resetForm()
-      notyf?.success('Connexion réussie, bienvenue !')
-      authStore.setUser(response.data.user)
-      router.push('/')
-    }).catch((err) => {
-      console.log(err)
-      const message = err.response?.data || 'Une erreur s\'est produite lors de la création.'
-      notyf?.error(message)
-    })
+  console.log("CREATE PWD TOKEN", authStore.token)
+  console.log(axios.defaults.headers.common)
+  createPassword(values).then(async (response) => {
+    actions.resetForm()
+    notyf?.success('Connexion réussie, bienvenue !')
+    await authStore.setUser(response.data.user)
+    await router.push('/')
+  }).catch((err) => {
+    console.log(err)
+    const message = err.response?.data || 'Une erreur s\'est produite lors de la création.'
+    notyf?.error(message)
+  })
 }
 
 </script>

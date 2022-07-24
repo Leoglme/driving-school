@@ -1,11 +1,15 @@
 <template>
   <section id="planning" class="flex flex-wrap">
     <div class="w-full xl:w-9/12 md:px-4">
+      <div>
+        <UserAutoComplete icon @setUser="setUser" id="chef" v-if="authorize"/>
+      </div>
       <Calendar v-model:selectedDay="selectedDay"
                 @eventClick="openEventDetailsModal"
                 :events="meets"
                 @eventDrop="eventDrop"
-                @addEvent="openEventModal"
+                :authorize="authorize"
+                @addEvent="onClickAddEventButton"
                 @onSelect="onSelect"/>
     </div>
     <div class="w-full xl:w-3/12 md:px-4 pt-16">
@@ -41,7 +45,8 @@ import type { Meet } from "@/types/meet";
 import { deleteMeet, getMeets, updateMeet } from "@/Api/meet";
 import type { EventDef, EventDropArg, EventInput } from "@fullcalendar/common";
 import type { Notyf } from "notyf";
-
+import UserAutoComplete from "@/components/Input/UserAutoComplete.vue"
+import { useAuthStore } from "@/stores/auth.store";
 /*Refs*/
 const meets: Ref<Meet[]> = ref([])
 const currentEvent: Ref<EventDef | { title?: string, extendedProps?: Record<string, any> }> = ref({})
@@ -49,20 +54,29 @@ const selectedDay = ref(startOfToday())
 const today = new Date().toString()
 const start = ref(today)
 const end = ref(today)
-
+const user: Ref<number | undefined> = ref(undefined)
 const actionDates = ref([] as string[])
 const eventModal = ref()
 const deleteMeetModal = ref()
 const eventDetailsModal = ref()
+
+/*Store*/
+const auth = useAuthStore()
+const authorize: Ref<boolean> = ref(auth.user?.role?.name !== 'Student')
 
 /*Sets*/
 const setActionDates = () => actionDates.value = meets.value.map((el) => {
   return new Date(el.start).toISOString();
 })
 
+const setUser = (id: number) => {
+  user.value = id
+  refresh()
+}
+
 /*Api methods*/
 const refresh = () => {
-  getMeets().then(r => {
+  getMeets(user.value).then(r => {
     r.map((e: Meet & { eventId: number }) => {
       e.eventId = e.id
       e.start = new Date(e.start)
@@ -93,6 +107,12 @@ const okDelete = () => {
       notyf?.error('Une erreur s\'est produite lors de la suppression')
     })
   }
+}
+
+const onClickAddEventButton = () => {
+  start.value = today
+  end.value = today
+  openEventModal()
 }
 
 const openEventModal = () => {
@@ -143,8 +163,9 @@ const updateRange = (range: { start: string, end: string }) => {
 }
 
 const dateToUtcISo = (dateStr: string, dateOffset?: number) => {
-  /*To utc*/
-  const d = new Date(new Date(dateStr).getTime() - (new Date(dateStr).getTimezoneOffset() * 60000))
+  const d = new Date(dateStr)
+  d.setHours(new Date(today).getHours(), new Date(today).getMinutes(), new Date(today).getSeconds());
+
   if (dateOffset) {
     /*Remove days*/
     return new Date(new Date(d).getTime() - dateOffset).toISOString().toString()

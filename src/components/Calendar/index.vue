@@ -1,5 +1,6 @@
 <template>
-  <header class="relative z-20 flex items-center justify-between border-b border-gray-200 py-4 px-6 lg:flex-none">
+  <header class="relative flex items-center justify-between border-b border-gray-200 py-4 px-6 lg:flex-none"
+          style="z-index: 9">
     <h1 class="text-lg font-semibold text-gray-900">
       <time>{{ title }}</time>
     </h1>
@@ -63,8 +64,8 @@
             </MenuItems>
           </transition>
         </Menu>
-        <div class="ml-6 h-6 w-px bg-gray-300"/>
-        <button @click="addEvent" type="button" class="bg-indigo-600 text-white active:bg-indigo-500 font-bold uppercase text-xs px-6 py-3 rounded shadow
+        <div class="ml-6 h-6 w-px bg-gray-300" v-if="authorize"/>
+        <button v-if="authorize" @click="addEvent" type="button" class="bg-indigo-600 text-white active:bg-indigo-500 font-bold uppercase text-xs px-6 py-3 rounded shadow
       hover:shadow-md outline-none focus:outline-none ml-auto ease-linear transition-all duration-150">
           Ajouter un rendez-vous
         </button>
@@ -83,7 +84,7 @@
               class="focus:outline-none absolute right-0 mt-3 w-36 origin-top-right divide-y divide-gray-100 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
             <div class="py-1">
               <MenuItem v-slot="{ active }">
-                <button @click="addEvent" class="w-full text-left"
+                <button v-if="authorize" @click="addEvent" class="w-full text-left"
                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                   Ajouter un rendez-vous
                 </button>
@@ -131,11 +132,15 @@
   </header>
   <FullCalendar
       ref="fullCalendar"
+      :class="{'disabled': !authorize}"
       :options="options">
     <template v-slot:eventContent='arg'>
       <span class="flex flex-wrap items-center">
          <span class="mr-1 text-pink-700">{{ arg.timeText }}</span>
       <b class="text-pink-700">{{ arg.event.title }}</b>
+         <span class="ml-1 text-black" v-if="arg.event.start && arg.event.end">
+           ({{ Math.round(differenceInMinutes(arg.event.end, arg.event.start) / 60) }}h)
+         </span>
       </span>
 
       <br>
@@ -161,7 +166,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
-import { startOfToday } from "date-fns";
+import { addDays, startOfToday, differenceInMinutes } from "date-fns";
 
 /*Data*/
 const viewsTitle = [
@@ -176,6 +181,7 @@ const timeZone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 /*Props*/
 const props = defineProps({
   events: { type: Array, default: () => ([]) },
+  authorize: { type: Boolean, default: false },
   selectedDay: { type: Date, default: startOfToday() }
 })
 
@@ -193,11 +199,11 @@ const options = reactive({
   events: props.events,
   locale: 'fr',
   timeZone,
-  editable: true,
+  editable: props.authorize,
   select: onSelect,
   eventClick: eventClick,
   eventDrop: eventDrop,
-  selectable: true,
+  selectable: props.authorize,
   headerToolbar: false
 })
 
@@ -261,7 +267,7 @@ const title = ref(getTitle())
 const setDate = (date: Date = props.selectedDay) => {
   const calendarApi = fullCalendar.value?.getApi()
   if (calendarApi) {
-    calendarApi.gotoDate(date)
+    calendarApi.gotoDate(addDays(date, 1))
     title.value = getTitle()
   }
 }

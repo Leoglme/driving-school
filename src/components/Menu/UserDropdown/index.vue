@@ -21,10 +21,10 @@
         hidden: !dropdownPopoverShow,
         block: dropdownPopoverShow,
       }">
-      <a href="/account"
+      <router-link to="/account"
          class="hover:text-indigo-600 text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
         Mon profile
-      </a>
+      </router-link>
       <div class="h-0 my-2 border border-solid border-blueGray-100"/>
       <button @click="logout"
          class="hover:text-indigo-600 text-left text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">

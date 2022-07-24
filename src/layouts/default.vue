@@ -24,12 +24,14 @@ import { useReferencielStore } from "@/stores/referenciel.store";
 import { useAuthStore } from "@/stores/auth.store";
 
 const app = useAppStore()
-const { setRoles} = useReferencielStore()
+const { setRoles } = useReferencielStore()
 
 const { pending } = toRefs(app.$state);
 const { setPending } = app;
 
-const { token } = useAuthStore()
+const { token, setToken } = useAuthStore()
+
+setToken(token)
 
 /*Axios scope response and request
 * global loading and progress bar
@@ -38,9 +40,6 @@ const progresses = [] as ProgressFinisher[];
 
 axios.interceptors.request.use(config => {
   progresses.push(useProgress().start());
-  if (token && config.headers){
-    config.headers.Authorization = token;
-  }
   return config;
 });
 

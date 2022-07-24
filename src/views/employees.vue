@@ -1,7 +1,7 @@
 <template>
   <div class="flex wrap flex-wrap gap-4 justify-center items-center mb-4">
-    <SearchBar v-model:search="search" class="ml-auto" style="max-width: 600px"/>
-    <router-link to="/employee/add" role="button"
+    <SearchBar v-model:search="search" :class="{'ml-auto': authorize}" style="max-width: 600px"/>
+    <router-link v-if="authorize" to="/employee/add" role="button"
                  class="bg-indigo-600 text-white active:bg-indigo-500 font-bold uppercase text-xs px-6 py-3 rounded shadow
       hover:shadow-md outline-none focus:outline-none ml-auto ease-linear transition-all duration-150">
       <i class="fas fa-plus mr-1"></i> Ajouter un employé
@@ -23,10 +23,12 @@ import ConfirmModal from "@/components/Modal/ConfirmModal.vue"
 import { deleteUsers, getEmployees } from "@/Api/users";
 import type { Notyf } from 'notyf';
 import { inject, ref, watch } from "vue";
+import { useAuthStore } from "@/stores/auth.store";
 
 /*Hooks*/
 const notyf: Notyf | undefined = inject('notyf')
 /*Store*/
+const auth = useAuthStore()
 
 /*Refs*/
 const employees = ref([])
@@ -37,6 +39,8 @@ const currentEmployeeId = ref()
 const pending = ref(true)
 const search = ref('')
 const totalPages = ref(0)
+const currentUser = ref(auth.user || {})
+const authorize = currentUser.value.role?.name === 'Secretary' || currentUser.value.role?.name === 'Admin'
 
 /*Watch*/
 watch(() => search.value, () => {

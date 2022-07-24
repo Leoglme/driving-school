@@ -13,6 +13,14 @@
           autocomplete="off"
           placeholder="John Doe"
       />
+      <span v-if="search" @click="clear" title="Effacer la recherche" class="cursor-pointer z-10 h-full leading-snug font-normal absolute
+      text-center hover:text-blueGray-500 active:text-blueGray-500 text-blueGray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 right-0 pr-3 py-3">
+    <i class="fas fa-times"></i>
+  </span>
+      <span v-if="icon && !search"
+            class="z-10 h-full leading-snug font-normal absolute text-center text-blueGray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 right-0 pr-3 py-3">
+    <i class="fas fa-search"></i>
+  </span>
       <span class="text-red-600">{{ errors }}</span>
     </div>
     <div v-show="users.length"
@@ -48,6 +56,7 @@ const limitResult = 6
 const props = defineProps({
   errors: { type: String, default: null },
   user: { type: Object as PropType<User>, default: () => ({}) },
+  icon: { type: Boolean, default: false },
   id: { type: String, default: 'user-auto-complete' }
 })
 
@@ -59,6 +68,11 @@ const users: Ref<User[]> = ref([])
 
 /*Emits*/
 const emit = defineEmits(['setUser'])
+
+const clear = () => {
+  search.value = ''
+  emit('setUser', undefined)
+}
 
 /*Methods*/
 const setInput = (user: User) => {

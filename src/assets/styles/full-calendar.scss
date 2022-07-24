@@ -97,3 +97,9 @@ th.fc-col-header-cell {
     }
   }
 }
+
+/*Disabled*/
+.disabled .fc-daygrid-event-harness a, .disabled .fc-timegrid-event-harness a, .disabled .fc-list-event {
+  cursor: default;
+  pointer-events: none;
+}

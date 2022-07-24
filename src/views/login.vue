@@ -119,13 +119,13 @@ const togglePassword = ref(false)
 
 /* Appel Api*/
 const onSubmit = (values: LoginCommand, actions: FormActions<LoginCommand>) => {
-  login(values).then((response) => {
-    console.log(response.data)
-
+  login(values).then(async (response) => {
     actions.resetForm()
     const passwordNeedSet = response?.data?.passwordNeedSet
 
-    authStore.setToken(response.data.token.token)
+    await authStore.setToken(response.data.token.token)
+
+    console.log("SET TOKEN LOGIN", response.data.token.token)
 
     if (passwordNeedSet) {
       return router.push('/create-password')
@@ -134,7 +134,7 @@ const onSubmit = (values: LoginCommand, actions: FormActions<LoginCommand>) => {
     notyf?.success('Connexion réussie, bienvenue !')
     authStore.setUser(response.data.user)
 
-    router.push('/')
+    await router.push('/')
   }).catch((err) => {
     const message = err.response?.data || 'Une erreur s\'est produite lors de la connexion.'
     notyf?.error(message)

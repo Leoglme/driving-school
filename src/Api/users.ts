@@ -39,7 +39,7 @@ export const getEmployees = async (search: string | undefined, page: number | un
             search, page
         }
     }
-    const res = await axios.get(`${api_url}/employee`, options)
+    const res = await axios.get(`${api_url}/employees`, options)
     return res.data;
 }
 
