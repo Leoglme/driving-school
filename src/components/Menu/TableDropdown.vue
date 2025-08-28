@@ -37,7 +37,7 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { createPopper } from "@popperjs/core";
 
 export default {

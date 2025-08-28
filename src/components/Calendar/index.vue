@@ -119,7 +119,7 @@
               </MenuItem>
               <MenuItem v-slot="{ active }">
                 <button @click="onChangeView('listWeek')" class="w-full text-left"
-                        :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                        :class="`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm`">
                   Liste
                 </button>
               </MenuItem>
@@ -146,8 +146,8 @@
       <br>
       <div v-if="currentView() !== 'dayGridMonth' && currentView() !== 'timeGridWeek'">
         <h2 class="font-semibold text-gray-900">
-          {{ convertUserIdToUser(arg.event.extendedProps.chef).first_name + ' ' + convertUserIdToUser(arg.event.extendedProps.chef).last_name }} -
-          {{ convertUserIdToUser(arg.event.extendedProps.user).first_name + ' ' + convertUserIdToUser(arg.event.extendedProps.user).last_name }}
+          {{ convertUserIdToUser(arg.event.extendedProps.chef)?.first_name + ' ' + convertUserIdToUser(arg.event.extendedProps.chef)?.last_name }} -
+          {{ convertUserIdToUser(arg.event.extendedProps.user)?.first_name + ' ' + convertUserIdToUser(arg.event.extendedProps.user)?.last_name }}
         </h2>
       </div>
 

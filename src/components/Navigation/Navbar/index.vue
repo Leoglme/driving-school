@@ -11,7 +11,7 @@
   <!-- End Navbar -->
 </template>
 
-<script>
+<script lang="ts">
 import UserDropdown from "@/components/Menu/UserDropdown/index.vue";
 
 export default {

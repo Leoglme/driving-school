@@ -31,7 +31,7 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
 const months = [
   {

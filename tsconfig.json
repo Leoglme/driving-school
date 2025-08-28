@@ -1,19 +1,25 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": ["env.d.ts", "src/**/*.ts", "src/**/*.d.ts"],
   "compilerOptions": {
     "baseUrl": ".",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "jsx": "preserve",
     "types": [
-      "vue-router", "pinia", "date-fns"
+      "vite/client",
+      "vue",
+      "vue-router",
+      "pinia",
+      "date-fns"
     ],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "paths": { "@/*": ["./src/*"] },
+    "plugins": [{ "name": "@vue/typescript-plugin" }],
+    "skipLibCheck": true,
+    "useDefineForClassFields": true
   },
-
-  "references": [
-    {
-      "path": "./tsconfig.config.json"
-    }
-  ]
+  "vueCompilerOptions": {
+    "strictTemplates": false
+  },
+  "references": [{ "path": "./tsconfig.config.json" }]
 }

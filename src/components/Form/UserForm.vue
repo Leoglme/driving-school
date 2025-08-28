@@ -129,7 +129,11 @@
           </div>
           <div class="w-full lg:w-6/12 md:px-4">
             <div class="relative w-full mb-3">
-              <RoleSelect :disabled="!authorize" v-model:selected="role"/>
+              <RoleSelect
+                  :disabled="!authorize"
+                  :selected="role"
+                  @update:selected="role = $event"
+              />
             </div>
           </div>
 
