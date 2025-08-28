@@ -1,6 +1,6 @@
 <template>
   <section id="login">
-    <div class="flex flex-col items-center justify-center px-2 py-8 mx-auto md:h-screen lg:py-0">
+    <div class="flex flex-col items-center justify-center py-8 mx-auto md:h-screen lg:py-0">
       <div class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
         <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 280.000000 280.000000"
              preserveAspectRatio="xMidYMid meet">
