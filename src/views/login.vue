@@ -32,6 +32,7 @@
                   id="email"
                   type="email"
                   placeholder="name@driving-school.fr"
+                  v-model="email"
                   :class="errors.email ? 'border border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'"
                   class="border p-2.5 text-gray-900 sm:text-sm bg-gray-50
                   rounded focus:border-blue-600 focus:outline-none w-full ease-linear
@@ -61,6 +62,7 @@
                     id="password"
                     name="password"
                     :type="togglePassword ? 'text' : 'password'"
+                    v-model="password"
                     placeholder="••••••••"
                     :class="errors.password ? 'border border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600'"
                     class="border p-2.5 text-gray-900 sm:text-sm bg-gray-50
@@ -72,7 +74,9 @@
               </div>
             </div>
 
-            <div class="flex items-center justify-between">
+            <div
+                v-if="email !== userAdminEmail"
+                class="flex items-center justify-between">
               <router-link to="/forgot-password"
                            class="link text-sm font-medium text-indigo-600 dark:text-indigo-500">
                 Mot de passe oublié ?
@@ -115,6 +119,9 @@ const schema = {
 
 /*Refs*/
 const togglePassword = ref(false)
+const userAdminEmail: string = 'admin@driving-school.dibodev.fr'
+const email = ref(userAdminEmail)
+const password = ref('password')
 
 
 /* Appel Api*/
@@ -123,7 +130,7 @@ const onSubmit = (values: LoginCommand, actions: FormActions<LoginCommand>) => {
     actions.resetForm()
     const passwordNeedSet = response?.data?.passwordNeedSet
 
-    await authStore.setToken(response.data.token.token)
+    authStore.setToken(response.data.token.token)
 
     console.log("SET TOKEN LOGIN", response.data.token.token)
 

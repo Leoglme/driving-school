@@ -39,7 +39,7 @@ import AddMeetModal from "@/components/Modal/AddMeetModal.vue"
 import ConfirmModal from "@/components/Modal/ConfirmModal.vue"
 import MeetModal from "@/components/Modal/MeetModal.vue"
 import { inject, ref } from "vue";
-import { format, startOfToday, subHours } from "date-fns";
+import { format, startOfToday } from "date-fns";
 import type { Ref } from "vue";
 import type { Meet } from "@/types/meet";
 import { deleteMeet, getMeets, updateMeet } from "@/Api/meet";
@@ -142,8 +142,8 @@ const eventDrop = (arg: EventDropArg) => {
       start: format(start.setHours(start.getHours() - 2), isoFormat),
       end: format(end.setHours(end.getHours() - 2), isoFormat),
       allDay: arg.event.allDay,
-      chef: arg.event.extendedProps?.chef?.id,
-      user: arg.event.extendedProps?.user?.id,
+      chef: arg.event.extendedProps?.chef,
+      user: arg.event.extendedProps?.user,
     }
 
     updateMeet(parseInt(meetId), command).then(r => {

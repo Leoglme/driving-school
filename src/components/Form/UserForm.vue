@@ -1,9 +1,9 @@
 <template>
-  <Form @submit="onSubmit" :validation-schema="action === 'update' ? schema : createSchema" v-slot="{ errors }"
-        class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0">
+  <Form @submit="onSubmit" v-slot="{ errors }"
+        class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-slate-100 border-0">
     <div class="rounded-t bg-white mb-0 px-6 py-6">
-      <div class="text-center flex justify-between">
-        <h6 class="text-blueGray-700 text-xl font-bold">
+      <div class="text-center flex flex-col sm:flex-row gap-6 justify-between">
+        <h6 class="text-slate-700 text-xl font-bold">
           {{ action === "update" ? `Profile de ${fullName}` : 'Nouvel utilisateur' }}</h6>
         <button :disabled="disabled()"
                 class="bg-indigo-600 text-white active:bg-indigo-500 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
@@ -14,13 +14,13 @@
     </div>
     <div class="flex-auto px-4 lg:px-10 py-10 pt-0">
       <div>
-        <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
+        <h6 class="text-slate-400 text-sm mt-3 mb-6 font-bold uppercase">
           Information utilisateur
         </h6>
         <div class="flex flex-wrap">
           <div class="w-full lg:w-6/12 md:px-4">
             <div class="relative w-full mb-3">
-              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="first_name">
+              <label class="block uppercase text-slate-600 text-xs font-bold mb-2" for="first_name">
                 Prénom
               </label>
               <Field
@@ -28,7 +28,8 @@
                   id="first_name"
                   type="text"
                   :class="errors.first_name ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
-                  class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rules="required"
+                  class="border-2 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white
                   rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                   v-model="user.first_name"
@@ -44,7 +45,7 @@
           </div>
           <div class="w-full lg:w-6/12 md:px-4">
             <div class="relative w-full mb-3">
-              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="last_name">
+              <label class="block uppercase text-slate-600 text-xs font-bold mb-2" for="last_name">
                 Nom
               </label>
               <Field
@@ -52,7 +53,8 @@
                   id="last_name"
                   type="text"
                   :class="errors.last_name ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
-                  class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rules="required"
+                  class="border-2 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white
                   rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                   v-model="user.last_name"
@@ -67,15 +69,15 @@
           </div>
         </div>
 
-        <hr class="mt-6 border-b-1 border-blueGray-300"/>
+        <hr class="mt-6 border-b-1 border-slate-300"/>
 
-        <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
+        <h6 class="text-slate-400 text-sm mt-3 mb-6 font-bold uppercase">
           Information de compte
         </h6>
         <div class="flex flex-wrap">
           <div class="w-full lg:w-6/12 md:px-4">
             <div class="relative w-full mb-3">
-              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="email">
+              <label class="block uppercase text-slate-600 text-xs font-bold mb-2" for="email">
                 Email
               </label>
               <Field
@@ -83,7 +85,8 @@
                   id="email"
                   type="email"
                   :class="errors.email ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
-                  class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  rules="required|email"
+                  class="border-2 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white
                   rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                   v-model="user.email"
@@ -98,7 +101,7 @@
           </div>
           <div class="w-full lg:w-6/12 md:px-4" v-if="action !== 'update'">
             <div class="relative w-full mb-3">
-              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="password">
+              <label class="block uppercase text-slate-600 text-xs font-bold mb-2" for="password">
                 Mot de passe
               </label>
               <div class="relative w-full">
@@ -113,7 +116,8 @@
                     name="password"
                     :type="togglePassword ? 'text' : 'password'"
                     :class="errors.password ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
-                    class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                    :rules="action !== 'update' ? 'required' : ''"
+                    class="border-2 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white
                   rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
                     v-model="user.password"
@@ -131,7 +135,7 @@
 
           <div class="w-full lg:w-6/12 md:px-4" v-if="role && role.name === 'Student' && user.driving_time">
             <div class="relative w-full mb-3">
-              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="hours_remaining">
+              <label class="block uppercase text-slate-600 text-xs font-bold mb-2" for="hours_remaining">
                 Heures de conduite disponible
               </label>
               <Field
@@ -140,8 +144,9 @@
                   id="hours_remaining"
                   type="number"
                   v-model="user.driving_time.hours_remaining"
+                  :rules="role && role.name === 'Student' && user.driving_time ? 'required' : ''"
                   :class="errors.hours_remaining ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
-                  class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                  class="border-2 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white
                   rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
               />
@@ -186,23 +191,6 @@ const notyf: Notyf | undefined = inject('notyf')
 const emit = defineEmits(['refresh', 'setRole'])
 const router = useRouter()
 
-
-/*Computed*/
-const schema = {
-  email: 'required|email',
-  first_name: 'required',
-  hours_remaining: 'required',
-  last_name: 'required'
-};
-
-const createSchema = {
-  email: 'required|email',
-  first_name: 'required',
-  hours_remaining: 'required',
-  last_name: 'required',
-  password: 'required'
-}
-
 /*Watch*/
 watch(() => role.value, (val: Role) => {
   emit('setRole', val)
@@ -232,6 +220,7 @@ const fullName = computed(() => user.first_name + " " + user.last_name)
 
 /* Appel Api*/
 const onSubmit = (values: Record<string, any>) => {
+  console.log("submit", values)
   const command: UserCommand = {
     role_id: role.value.id,
     first_name: user.first_name,

@@ -30,20 +30,20 @@ const routes = [
                 component: Home,
             },
             {
-                path: "/students",
-                component: Users,
+                path: "students",
+                component: { template: "<router-view/>" },
+                children: [
+                    { path: "", name: "students-list", component: Users },
+                    { path: "add", name: "students-add", component: addStudent }
+                ],
             },
             {
-                path: "/student/add",
-                component: addStudent,
-            },
-            {
-                path: "/employees",
-                component: Employees,
-            },
-            {
-                path: "/employee/add",
-                component: addEmployee,
+                path: "employees",
+                component: { template: "<router-view/>" },
+                children: [
+                    { path: "", name: "employees-list", component: Employees },
+                    { path: "add", name: "employees-add", component: addEmployee }
+                ],
             },
             {
                 path: "/account",

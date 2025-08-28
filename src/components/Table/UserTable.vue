@@ -3,7 +3,7 @@
     <div class="rounded-t mb-0 px-4 py-3 border-0">
       <div class="flex flex-wrap items-center">
         <div class="relative w-full px-4 max-w-full flex-grow flex-1">
-          <h3 class="font-semibold text-lg text-blueGray-700">
+          <h3 class="font-semibold text-lg text-slate-700">
             {{ title }}
           </h3>
         </div>
@@ -15,15 +15,15 @@
         <thead>
         <tr>
           <th v-for="field in fields" :key="field"
-              class="bg-blueGray-50 text-blueGray-500 border-blueGray-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0
+              class="bg-slate-50 text-slate-500 border-slate-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0
           border-r-0 whitespace-nowrap font-semibold text-left">
             {{ field }}
           </th>
-          <th class="bg-blueGray-50 text-blueGray-500 border-blueGray-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0
+          <th class="bg-slate-50 text-slate-500 border-slate-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0
           border-r-0 whitespace-nowrap font-semibold text-left" v-if="!hideHour">
             Heures
           </th>
-          <th v-if="authorize" class="bg-blueGray-50 text-blueGray-500 border-blueGray-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+          <th v-if="authorize" class="bg-slate-50 text-slate-500 border-slate-100 px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
           />
         </tr>
         </thead>
@@ -36,7 +36,7 @@
                 class="h-10 w-10 bg-white rounded-full border"
                 :alt="user.first_name + ' ' + user.last_name"
             />
-            <span class="text-blueGray-600 ml-3 font-bold">
+            <span class="text-slate-600 ml-3 font-bold">
               <router-link class="link" :to="{ name: 'user-profile', params: { userId: user.id }}">
                 {{ user.first_name }} {{ user.last_name }}
               </router-link>

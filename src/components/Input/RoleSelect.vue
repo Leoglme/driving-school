@@ -1,5 +1,5 @@
 <template>
-  <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="role_id">
+  <label class="block uppercase text-slate-600 text-xs font-bold mb-2" for="role_id">
     Rôle
   </label>
 
@@ -7,7 +7,7 @@
           :disabled="disabled"
           name="selectedRole"
           v-model="selectedRole"
-          class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
+          class="border-0 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
     <option :value="role"
             v-for="role in roles"
             :key="role.id">{{ role.name }}

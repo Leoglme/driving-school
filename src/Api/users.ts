@@ -8,7 +8,7 @@ export const getUser = async (id: string) => {
     return res.data;
 }
 
-export const getUsers = async (search: string | undefined, limit: number | undefined) => {
+export const getUsers = async (search?: string, limit?: number) => {
     if (search){
         search = search.trim()
     }

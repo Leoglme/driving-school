@@ -28,7 +28,7 @@
                 type="text"
                 placeholder="Mon évènement"
                 :class="errors.title ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
-                class="border-2 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+                class="border-2 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white
                   rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 focus:ring-0"
             />
@@ -38,7 +38,7 @@
             <label for="chef" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Chef (instructeur ou secrétaire)
             </label>
-            <UserAutoComplete v-if="event.extendedProps" :user="event.extendedProps.chef" @setUser="setChef" id="chef"
+            <UserAutoComplete v-if="event.extendedProps" :userId="event.extendedProps.chef" @setUser="setChef" id="chef"
                               :errors="errors.chef"/>
           </div>
 
@@ -46,7 +46,7 @@
             <label for="user" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Utilisateur invité
             </label>
-            <UserAutoComplete v-if="event.extendedProps" :user="event.extendedProps.user" @setUser="setUser" id="user"
+            <UserAutoComplete v-if="event.extendedProps" :userId="event.extendedProps.user" @setUser="setUser" id="user"
                               :errors="errors.user"/>
           </div>
           <div>

@@ -146,8 +146,8 @@
       <br>
       <div v-if="currentView() !== 'dayGridMonth' && currentView() !== 'timeGridWeek'">
         <h2 class="font-semibold text-gray-900">
-          {{ arg.event.extendedProps.chef.first_name + ' ' + arg.event.extendedProps.chef.last_name }} -
-          {{ arg.event.extendedProps.user.first_name + ' ' + arg.event.extendedProps.user.last_name }}
+          {{ convertUserIdToUser(arg.event.extendedProps.chef).first_name + ' ' + convertUserIdToUser(arg.event.extendedProps.chef).last_name }} -
+          {{ convertUserIdToUser(arg.event.extendedProps.user).first_name + ' ' + convertUserIdToUser(arg.event.extendedProps.user).last_name }}
         </h2>
       </div>
 
@@ -160,6 +160,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon } from '@heroicons/vue/solid'
 
 import { onMounted, reactive, ref, watch } from "vue";
+import type { Ref } from "vue";
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -167,6 +168,8 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 import { addDays, startOfToday, differenceInMinutes } from "date-fns";
+import { getUsers } from "@/Api/users";
+import type { User } from "@/types/user";
 
 /*Data*/
 const viewsTitle = [
@@ -244,7 +247,7 @@ const onToday = () => {
   }
 }
 
-const onChangeView = (view: string) => {
+const onChangeView = async (view: string) => {
   const calendarApi = fullCalendar.value?.getApi()
 
   if (calendarApi && view) {
@@ -252,6 +255,15 @@ const onChangeView = (view: string) => {
     calendarApi.changeView(view, calendarApi.currentData.currentDate)
     title.value = getTitle()
   }
+}
+
+const users: Ref<User[]> = ref([])
+
+getUsers().then((us: User[]) => users.value = us)
+
+
+const convertUserIdToUser = (id: number) => {
+  return users.value.find(u => u.id === id)
 }
 
 const onNext = () => {

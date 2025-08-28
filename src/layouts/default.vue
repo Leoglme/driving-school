@@ -1,8 +1,8 @@
 <template>
   <Sidebar/>
-  <div class="relative md:ml-64 bg-blueGray-100 min-h-screen">
+  <div class="relative md:ml-64 bg-slate-100 min-h-screen">
     <Navbar/>
-    <main class="p-4">
+    <main class="p-4 relative z-[1]">
       <router-view v-if="!pending"/>
       <Spinner v-else/>
     </main>

@@ -25,7 +25,7 @@
       </div>
 
       <div class="text-center mt-4">
-        <h3 class="text-xl font-semibold leading-normal mb-2 text-blueGray-700">
+        <h3 class="text-xl font-semibold leading-normal mb-2 text-slate-700">
           {{ fullName }}
         </h3>
 
@@ -34,7 +34,7 @@
             {{ user.email }}
           </a>
         </div>
-        <div class="mb-4 text-blueGray-600 mt-4">
+        <div class="mb-4 text-slate-600 mt-4">
           <BadgeRole :role="user.role"/>
         </div>
       </div>

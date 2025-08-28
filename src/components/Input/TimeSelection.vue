@@ -9,7 +9,7 @@
             v-model="inputValue.start"
             v-on="inputEvents.start"
             :class="errors.start ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
-            class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+            class="px-3 py-3 placeholder-slate-300 text-slate-600 bg-white
                   rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 border-2 focus:ring-0"
         />
@@ -32,7 +32,7 @@
             v-model="inputValue.end"
             v-on="inputEvents.end"
             :class="errors.end ? 'border-red-500 focus:border-red-500': 'border-slate-200'"
-            class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white
+            class="px-3 py-3 placeholder-slate-300 text-slate-600 bg-white
                   rounded-md text-sm focus:border-blue-600 focus:outline-none w-full ease-linear
                   transition-all duration-150 border-2 focus:ring-0"
         />
