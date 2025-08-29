@@ -143,11 +143,7 @@ const onSubmit = (values: LoginCommand, actions: FormActions<LoginCommand>) => {
 
     await router.push('/')
   }).catch((err) => {
-    console.log({
-      data: err.response?.data,
-      response: err.response,
-    })
-    const message = err.response?.data || 'Une erreur s\'est produite lors de la connexion.'
+    const message = err.response?.data?.error || 'Une erreur s\'est produite lors de la connexion.'
     notyf?.error(message)
   })
 }

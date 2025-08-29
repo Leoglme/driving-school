@@ -76,7 +76,7 @@ const onDeleteStudent = () => {
     notyf?.success('L\'étudiant à été supprimé.')
     refresh()
   }).catch((err) => {
-    const message = err.response?.data || 'Une erreur s\'est produite lors de la suppression'
+    const message = err.response?.data?.error || 'Une erreur s\'est produite lors de la suppression'
     notyf?.error(message)
   })
 }

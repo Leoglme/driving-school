@@ -151,7 +151,7 @@ const eventDrop = (arg: EventDropArg) => {
       setActionDates()
     }).catch(err => {
       console.log(err)
-      const message = err.response?.data || 'Une erreur s\'est produite lors de la modification.'
+      const message = err.response?.data?.error || 'Une erreur s\'est produite lors de la modification.'
       notyf?.error(message)
     })
   }

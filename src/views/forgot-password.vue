@@ -91,7 +91,7 @@ const onSubmit = (values: ForgotPasswordCommand, actions: FormActions<ForgotPass
     actions.resetForm()
   }).catch((err) => {
     console.log(err)
-    const message = err.response?.data || 'Une erreur s\'est produite lors de l\'envoie du mail.'
+    const message = err.response?.data?.error || 'Une erreur s\'est produite lors de l\'envoie du mail.'
     notyf?.error(message)
   })
 }

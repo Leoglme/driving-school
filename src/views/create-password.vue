@@ -136,7 +136,7 @@ const onSubmit = (values: ResetPasswordCommand, actions: FormActions<ResetPasswo
     await router.push('/')
   }).catch((err) => {
     console.log(err)
-    const message = err.response?.data || 'Une erreur s\'est produite lors de la création.'
+    const message = err.response?.data?.error || 'Une erreur s\'est produite lors de la création.'
     notyf?.error(message)
   })
 }
