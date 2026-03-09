@@ -353,7 +353,7 @@ watch(() => props.events, (val) => {
   const events = Array.isArray(val) ? [...val] : []
   pendingEvents.value = events
   log('events updated: total', events.length)
-  applyEventsForVisibleRange()
+  requestAnimationFrame(() => applyEventsForVisibleRange())
 }, { deep: true })
 watch(showFullCalendar, (visible) => {
   if (visible && pendingEvents.value.length > 0) {
