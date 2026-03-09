@@ -223,6 +223,11 @@ function applyEventsForVisibleRange() {
 }
 
 function onDatesSet(dateInfo: { start: Date; end: Date }) {
+  const start = dateInfo.start.getTime()
+  const end = dateInfo.end.getTime()
+  if (viewRange.value && viewRange.value.start.getTime() === start && viewRange.value.end.getTime() === end) {
+    return
+  }
   viewRange.value = { start: dateInfo.start, end: dateInfo.end }
   log('datesSet:', dateInfo.start.toISOString().slice(0, 10), '->', dateInfo.end.toISOString().slice(0, 10))
   applyEventsForVisibleRange()
