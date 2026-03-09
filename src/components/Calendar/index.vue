@@ -303,7 +303,7 @@ watch(() => props.selectedDay, () => {
   setDate()
 }, { deep: true })
 
-const BATCH_SIZE = 25
+const BATCH_SIZE = 10
 function applyEventsInBatches(events: any[], api: { removeAllEvents: () => void; addEvent: (ev: any) => void }) {
   const t0 = performance.now()
   log('applyEventsInBatches: start')
@@ -320,7 +320,7 @@ function applyEventsInBatches(events: any[], api: { removeAllEvents: () => void;
         api.addEvent(ev)
       } catch (_) {}
     }
-    if (i === BATCH_SIZE) log('applyEventsInBatches: first addBatch(25) took', `${(performance.now() - batchStart).toFixed(0)}ms`)
+    if (i === BATCH_SIZE) log('applyEventsInBatches: first addBatch(' + BATCH_SIZE + ') took', `${(performance.now() - batchStart).toFixed(0)}ms`)
     if (i < events.length) requestAnimationFrame(addBatch)
     else log('watch events: done', events.length, 'events')
   }
