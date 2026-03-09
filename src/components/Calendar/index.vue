@@ -199,6 +199,35 @@ const onSelect = (arg: any) => emit('onSelect', arg)
 const eventDrop = (arg: any) => emit('eventDrop', arg)
 const eventClick = (arg: any) => emit('eventClick', arg)
 
+function applyEventsForVisibleRange() {
+  const range = viewRange.value
+  const all = pendingEvents.value
+  if (!all.length) {
+    options.events = []
+    return
+  }
+  if (!range) {
+    options.events = []
+    log('visibleRange: no range yet, waiting for datesSet (total', all.length, ')')
+    return
+  }
+  const start = range.start.getTime()
+  const end = range.end.getTime()
+  const filtered = all.filter((e: any) => {
+    const es = e.start instanceof Date ? e.start.getTime() : new Date(e.start).getTime()
+    const ee = e.end instanceof Date ? e.end.getTime() : new Date(e.end).getTime()
+    return ee > start && es < end
+  })
+  log('visibleRange: total', all.length, '-> in range', filtered.length)
+  options.events = filtered
+}
+
+function onDatesSet(dateInfo: { start: Date; end: Date }) {
+  viewRange.value = { start: dateInfo.start, end: dateInfo.end }
+  log('datesSet:', dateInfo.start.toISOString().slice(0, 10), '->', dateInfo.end.toISOString().slice(0, 10))
+  applyEventsForVisibleRange()
+}
+
 /*Hooks*/
 const options = reactive({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
@@ -211,13 +240,15 @@ const options = reactive({
   eventClick: eventClick,
   eventDrop: eventDrop,
   selectable: props.authorize,
-  headerToolbar: false
+  headerToolbar: false,
+  datesSet: onDatesSet
 })
 
 /*Refs*/
 const fullCalendar = ref()
 const showFullCalendar = ref(false)
 const pendingEvents = ref<any[]>([])
+const viewRange = ref<{ start: Date; end: Date } | null>(null)
 const initialViewText = ref(viewsTitle.find(e => e.key === initialView)?.value)
 
 /*Methods*/
@@ -303,52 +334,16 @@ watch(() => props.selectedDay, () => {
   setDate()
 }, { deep: true })
 
-const BATCH_SIZE = 10
-function applyEventsInBatches(events: any[], api: { removeAllEvents: () => void; addEvent: (ev: any) => void }) {
-  const t0 = performance.now()
-  log('applyEventsInBatches: start')
-  api.removeAllEvents()
-  log('applyEventsInBatches: removeAllEvents took', `${(performance.now() - t0).toFixed(0)}ms`)
-  if (events.length === 0) return
-  let i = 0
-  const addBatch = () => {
-    const batchStart = performance.now()
-    const batch = events.slice(i, i + BATCH_SIZE)
-    i += BATCH_SIZE
-    for (const ev of batch) {
-      try {
-        api.addEvent(ev)
-      } catch (_) {}
-    }
-    if (i === BATCH_SIZE) log('applyEventsInBatches: first addBatch(' + BATCH_SIZE + ') took', `${(performance.now() - batchStart).toFixed(0)}ms`)
-    if (i < events.length) requestAnimationFrame(addBatch)
-    else log('watch events: done', events.length, 'events')
-  }
-  requestAnimationFrame(addBatch)
-}
 watch(() => props.events, (val) => {
-  const tw0 = performance.now()
-  log('watch: start')
   const events = Array.isArray(val) ? [...val] : []
-  const n = events.length
   pendingEvents.value = events
-  log('watch: after copy', n, 'events', `${(performance.now() - tw0).toFixed(0)}ms`)
-  const api = fullCalendar.value?.getApi()
-  log('watch: getApi took', `${(performance.now() - tw0).toFixed(0)}ms`)
-  if (!api) {
-    if (n <= 50) options.events = events
-    log('watch: end (no api)', `${(performance.now() - tw0).toFixed(0)}ms`)
-    return
-  }
-  requestAnimationFrame(() => applyEventsInBatches(events, api))
-  log('watch: end', `${(performance.now() - tw0).toFixed(0)}ms`)
+  log('events updated: total', events.length)
+  applyEventsForVisibleRange()
 }, { deep: true })
 watch(showFullCalendar, (visible) => {
-  if (!visible || pendingEvents.value.length === 0) return
-  nextTick(() => {
-    const api = fullCalendar.value?.getApi()
-    if (api) applyEventsInBatches(pendingEvents.value, api)
-  })
+  if (visible && pendingEvents.value.length > 0) {
+    nextTick(() => applyEventsForVisibleRange())
+  }
 })
 
 /*Lifecycle*/
