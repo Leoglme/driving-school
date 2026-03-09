@@ -84,6 +84,7 @@ const refresh = () => {
       e.start = new Date(e.start)
       e.end = new Date(e.end)
     })
+    if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: about to set meets', r.length)
     meets.value = r
     setActionDates()
     if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: GET /meets done', r.length, 'meets', `${(performance.now() - t0).toFixed(0)}ms`)

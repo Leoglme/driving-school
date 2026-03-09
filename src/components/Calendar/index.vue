@@ -302,10 +302,13 @@ watch(() => props.selectedDay, () => {
 
 watch(() => props.events, (val) => {
   const n = Array.isArray(val) ? val.length : 0
-  log('watch events: updating FullCalendar', n, 'events')
-  const t0 = performance.now()
-  options.events = val
-  queueMicrotask(() => log('watch events: done', `${(performance.now() - t0).toFixed(0)}ms`))
+  log('watch events: deferring FullCalendar update', n, 'events')
+  requestAnimationFrame(() => {
+    const t0 = performance.now()
+    log('watch events: applying', n, 'events')
+    options.events = val
+    queueMicrotask(() => log('watch events: done', `${(performance.now() - t0).toFixed(0)}ms`))
+  })
 }, { deep: true })
 
 /*Lifecycle*/
