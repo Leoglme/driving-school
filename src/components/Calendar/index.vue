@@ -202,7 +202,7 @@ const eventClick = (arg: any) => emit('eventClick', arg)
 const options = reactive({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
   initialView,
-  events: props.events,
+  events: [] as any[],
   locale: 'fr',
   timeZone,
   editable: props.authorize,
@@ -300,15 +300,31 @@ watch(() => props.selectedDay, () => {
   setDate()
 }, { deep: true })
 
+const BATCH_SIZE = 25
 watch(() => props.events, (val) => {
-  const n = Array.isArray(val) ? val.length : 0
-  log('watch events: deferring FullCalendar update', n, 'events')
-  requestAnimationFrame(() => {
-    const t0 = performance.now()
-    log('watch events: applying', n, 'events')
-    options.events = val
-    queueMicrotask(() => log('watch events: done', `${(performance.now() - t0).toFixed(0)}ms`))
-  })
+  const events = Array.isArray(val) ? [...val] : []
+  const n = events.length
+  log('watch events: batch update', n, 'events')
+  const api = fullCalendar.value?.getApi()
+  if (!api) {
+    options.events = events
+    return
+  }
+  api.removeAllEvents()
+  if (n === 0) return
+  let i = 0
+  const addBatch = () => {
+    const batch = events.slice(i, i + BATCH_SIZE)
+    i += BATCH_SIZE
+    for (const ev of batch) {
+      try {
+        api.addEvent(ev)
+      } catch (_) {}
+    }
+    if (i < n) requestAnimationFrame(addBatch)
+    else log('watch events: done', n, 'events')
+  }
+  requestAnimationFrame(addBatch)
 }, { deep: true })
 
 /*Lifecycle*/
