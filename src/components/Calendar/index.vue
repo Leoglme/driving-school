@@ -331,7 +331,7 @@ watch(() => props.events, (val) => {
     if (n <= 50) options.events = events
     return
   }
-  applyEventsInBatches(events, api)
+  requestAnimationFrame(() => applyEventsInBatches(events, api))
 }, { deep: true })
 watch(showFullCalendar, (visible) => {
   if (!visible || pendingEvents.value.length === 0) return
