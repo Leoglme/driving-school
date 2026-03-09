@@ -69,7 +69,7 @@ import {
   parse,
   startOfToday,
 } from 'date-fns'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 
 
 
@@ -170,4 +170,11 @@ const nextMonth = () => {
   refreshCalendar(firstDayNextMonth)
   setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'))
 }
+
+onMounted(() => {
+  if (typeof console !== 'undefined' && console.log) console.log('[Planning] MonthCalendar mounted, actionDates count:', props.actionDates.length)
+})
+watch(() => props.actionDates.length, (n) => {
+  if (typeof console !== 'undefined' && console.log && n > 0) console.log('[Planning] MonthCalendar actionDates updated:', n)
+})
 </script>

@@ -146,8 +146,8 @@
       <br>
       <div v-if="currentView() !== 'dayGridMonth' && currentView() !== 'timeGridWeek'">
         <h2 class="font-semibold text-gray-900">
-          {{ convertUserIdToUser(arg.event.extendedProps.chef)?.first_name + ' ' + convertUserIdToUser(arg.event.extendedProps.chef)?.last_name }} -
-          {{ convertUserIdToUser(arg.event.extendedProps.user)?.first_name + ' ' + convertUserIdToUser(arg.event.extendedProps.user)?.last_name }}
+          {{ formatUserName(getUserById(arg.event.extendedProps?.chef)) }} -
+          {{ formatUserName(getUserById(arg.event.extendedProps?.user)) }}
         </h2>
       </div>
 
@@ -159,8 +159,11 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon } from '@heroicons/vue/solid'
 
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch, computed } from "vue";
 import type { Ref } from "vue";
+
+const DEBUG = true
+const log = (msg: string, ...args: unknown[]) => DEBUG && console.log('[Planning]', msg, ...args)
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -258,11 +261,22 @@ const onChangeView = async (view: string) => {
 }
 
 const usersStore = useUsersStore()
-onMounted(() => usersStore.fetchUsers())
+onMounted(async () => {
+  log('Calendar mount: fetchUsers start')
+  const t0 = performance.now()
+  await usersStore.fetchUsers()
+  log('Calendar mount: fetchUsers end', `${(performance.now() - t0).toFixed(0)}ms`)
+})
 
-const convertUserIdToUser = (id: number) => {
-  return usersStore.users.find(u => u.id === id)
-}
+/** Map userId -> user for O(1) lookup in eventContent (avoids .find() per event) */
+const userById = computed(() => {
+  const map = new Map<number, User>()
+  for (const u of usersStore.users) map.set(u.id, u)
+  return map
+})
+const getUserById = (id: number) => userById.value.get(id)
+const formatUserName = (u: User | undefined) =>
+  u ? `${u.first_name ?? ''} ${u.last_name ?? ''}`.trim() : ''
 
 const onNext = () => {
   const calendarApi = fullCalendar.value?.getApi()
@@ -287,7 +301,11 @@ watch(() => props.selectedDay, () => {
 }, { deep: true })
 
 watch(() => props.events, (val) => {
+  const n = Array.isArray(val) ? val.length : 0
+  log('watch events: updating FullCalendar', n, 'events')
+  const t0 = performance.now()
   options.events = val
+  queueMicrotask(() => log('watch events: done', `${(performance.now() - t0).toFixed(0)}ms`))
 }, { deep: true })
 
 /*Lifecycle*/

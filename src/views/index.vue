@@ -76,6 +76,8 @@ const setUser = (id: number) => {
 
 /*Api methods*/
 const refresh = () => {
+  if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: GET /meets start', 'user_id=', user.value)
+  const t0 = performance.now()
   getMeets(user.value).then(r => {
     r.map((e: Meet & { eventId: number }) => {
       e.eventId = e.id
@@ -84,6 +86,7 @@ const refresh = () => {
     })
     meets.value = r
     setActionDates()
+    if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: GET /meets done', r.length, 'meets', `${(performance.now() - t0).toFixed(0)}ms`)
   })
 }
 refresh()
