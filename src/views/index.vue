@@ -4,7 +4,9 @@
       <div>
         <UserAutoComplete icon @setUser="setUser" id="chef" v-if="authorize"/>
       </div>
-      <Calendar v-model:selectedDay="selectedDay"
+      <CalendarSkeleton v-if="!meetsLoaded"/>
+      <Calendar v-else
+                v-model:selectedDay="selectedDay"
                 @eventClick="openEventDetailsModal"
                 :events="meets"
                 @eventDrop="eventDrop"
@@ -19,13 +21,13 @@
 
   <AddMeetModal
       @updateRange="updateRange"
-      @refresh="refresh"
+      @refresh="() => refresh(false)"
       :start="start"
       :end="end"
       ref="eventModal"
   />
   <MeetModal
-      @refresh="refresh"
+      @refresh="() => refresh(false)"
       :event="currentEvent"
       @onDelete="closeEventDetailsModal"
       ref="eventDetailsModal"/>
@@ -34,11 +36,12 @@
 
 <script lang="ts" setup>
 import Calendar from "@/components/Calendar/index.vue"
+import CalendarSkeleton from "@/components/Calendar/CalendarSkeleton.vue"
 import MonthCalendar from "@/components/Calendar/MonthCalendar.vue"
 import AddMeetModal from "@/components/Modal/AddMeetModal.vue"
 import ConfirmModal from "@/components/Modal/ConfirmModal.vue"
 import MeetModal from "@/components/Modal/MeetModal.vue"
-import { inject, ref } from "vue";
+import { inject, ref, shallowRef } from "vue";
 import { format, startOfToday } from "date-fns";
 import type { Ref } from "vue";
 import type { Meet } from "@/types/meet";
@@ -47,8 +50,11 @@ import type { EventDef, EventDropArg, EventInput } from "@fullcalendar/common";
 import type { Notyf } from "notyf";
 import UserAutoComplete from "@/components/Input/UserAutoComplete.vue"
 import { useAuthStore } from "@/stores/auth.store";
+import { useUsersStore } from "@/stores/users.store";
+
 /*Refs*/
-const meets: Ref<Meet[]> = ref([])
+const meets: Ref<Meet[]> = shallowRef([])
+const meetsLoaded = ref(false)
 const currentEvent: Ref<EventDef | { title?: string, extendedProps?: Record<string, any> }> = ref({})
 const selectedDay = ref(startOfToday())
 const today = new Date().toString()
@@ -62,7 +68,11 @@ const eventDetailsModal = ref()
 
 /*Store*/
 const auth = useAuthStore()
+const usersStore = useUsersStore()
 const authorize: Ref<boolean> = ref(auth.user?.role?.name !== 'Student')
+
+// Pré-charger les users en parallèle dès le début
+usersStore.fetchUsers()
 
 /*Sets*/
 const setActionDates = () => actionDates.value = meets.value.map((el) => {
@@ -71,41 +81,42 @@ const setActionDates = () => actionDates.value = meets.value.map((el) => {
 
 const setUser = (id: number) => {
   user.value = id
-  refresh()
+  refresh(false) // Pas de skeleton lors du changement d'utilisateur
 }
 
 /*Api methods*/
-const refresh = () => {
-  if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: GET /meets start', 'user_id=', user.value)
-  const t0 = performance.now()
+const refresh = (showSkeleton = true) => {
+  if (showSkeleton) {
+    meetsLoaded.value = false
+  }
+  
   getMeets(user.value).then(r => {
-    if (typeof console !== 'undefined' && console.log) console.log('[Planning] GET /meets response received', r.length)
-    r.map((e: Meet & { eventId: number }) => {
+    r.map((e: Meet & { eventId: number; duration?: number; chefName?: string; userName?: string }) => {
       e.eventId = e.id
       e.start = new Date(e.start)
       e.end = new Date(e.end)
+      
+      const durationMinutes = (e.end.getTime() - e.start.getTime()) / (1000 * 60)
+      e.duration = Math.round(durationMinutes / 60)
+      
+      const formatName = (u: any) => u ? `${u.first_name ?? ''} ${u.last_name ?? ''}`.trim() : ''
+      e.chefName = formatName(e.chef)
+      e.userName = formatName(e.user)
     })
-    if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: about to set meets', r.length)
-    if (typeof console !== 'undefined' && console.log) console.log('[Planning] scheduling rAF1')
-    requestAnimationFrame(() => {
-      const rAF0 = performance.now()
-      if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF1: start')
+    
+    setTimeout(() => {
       meets.value = r
-      if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF1: after meets.value', `${(performance.now() - rAF0).toFixed(0)}ms`)
-      if (typeof console !== 'undefined' && console.log) console.log('[Planning] scheduling rAF2')
-      requestAnimationFrame(() => {
-        const rAF1 = performance.now()
-        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: start')
-        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: before setActionDates')
-        setActionDates()
-        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: after setActionDates', `${(performance.now() - rAF1).toFixed(0)}ms`)
-        if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: GET /meets done', r.length, 'meets', `${(performance.now() - t0).toFixed(0)}ms`)
-        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: done')
-      })
-    })
+      setActionDates()
+      
+      if (showSkeleton) {
+        setTimeout(() => {
+          meetsLoaded.value = true
+        }, 50)
+      }
+    }, 0)
   })
 }
-refresh()
+refresh(true) // Premier chargement avec skeleton
 
 /*Hooks*/
 const notyf: Notyf | undefined = inject('notyf')
@@ -120,7 +131,7 @@ const okDelete = () => {
   if (meetId) {
     deleteMeet(meetId).then(r => {
       notyf?.success('Le rendez-vous à été supprimé.')
-      refresh()
+      refresh(false) // Pas de skeleton lors de la suppression
     }).catch((err) => {
       console.log(err)
       notyf?.error('Une erreur s\'est produite lors de la suppression')
@@ -166,7 +177,7 @@ const eventDrop = (arg: EventDropArg) => {
     }
 
     updateMeet(parseInt(meetId), command).then(r => {
-      refresh()
+      refresh(false) // Pas de skeleton lors de la mise à jour
       setActionDates()
     }).catch(err => {
       console.log(err)

@@ -136,22 +136,19 @@
       :class="{'disabled': !authorize}"
       :options="options">
     <template v-slot:eventContent='arg'>
-      <span class="flex flex-wrap items-center">
-         <span class="mr-1 text-pink-700">{{ arg.timeText }}</span>
-      <b class="text-pink-700">{{ arg.event.title }}</b>
-         <span class="ml-1 text-black" v-if="arg.event.start && arg.event.end">
-           ({{ Math.round(differenceInMinutes(arg.event.end, arg.event.start) / 60) }}h)
-         </span>
-      </span>
-
-      <br>
-      <div v-if="currentView() !== 'dayGridMonth' && currentView() !== 'timeGridWeek'">
-        <h2 class="font-semibold text-gray-900">
-          {{ formatUserName(getUserById(arg.event.extendedProps?.chef)) }} -
-          {{ formatUserName(getUserById(arg.event.extendedProps?.user)) }}
-        </h2>
+      <div class="fc-event-main-frame">
+        <div class="fc-event-time">{{ arg.timeText }}</div>
+        <div class="fc-event-title-container">
+          <div class="fc-event-title fc-sticky">
+            {{ arg.event.title }}
+            <div v-if="currentViewType !== 'dayGridMonth' && currentViewType !== 'timeGridWeek'">
+              <h2 class="font-semibold text-gray-900">
+                {{ arg.event.extendedProps?.chefName || '' }} - {{ arg.event.extendedProps?.userName || '' }}
+              </h2>
+            </div>
+          </div>
+        </div>
       </div>
-
     </template>
   </FullCalendar>
 </template>
@@ -163,8 +160,6 @@ import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon 
 import { onMounted, reactive, ref, watch, computed, nextTick } from "vue";
 import type { Ref } from "vue";
 
-const DEBUG = true
-const log = (msg: string, ...args: unknown[]) => DEBUG && console.log('[Planning]', msg, ...args)
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -199,60 +194,20 @@ const onSelect = (arg: any) => emit('onSelect', arg)
 const eventDrop = (arg: any) => emit('eventDrop', arg)
 const eventClick = (arg: any) => emit('eventClick', arg)
 
-function applyEventsForVisibleRange() {
-  const t0 = performance.now()
-  log('applyEventsForVisibleRange: start')
-  const range = viewRange.value
-  const all = pendingEvents.value
-  log('applyEventsForVisibleRange: all=', all.length, 'range=', range ? 'yes' : 'no', (performance.now() - t0).toFixed(0) + 'ms')
-  if (!all.length) {
-    options.events = []
-    log('applyEventsForVisibleRange: done (empty)', (performance.now() - t0).toFixed(0) + 'ms')
-    queueMicrotask(() => log('applyEventsForVisibleRange: returned (microtask)'))
-    return
-  }
-  if (!range) {
-    options.events = []
-    log('visibleRange: no range yet, waiting for datesSet (total', all.length, ')', (performance.now() - t0).toFixed(0) + 'ms')
-    queueMicrotask(() => log('applyEventsForVisibleRange: returned (microtask)'))
-    return
-  }
-  const start = range.start.getTime()
-  const end = range.end.getTime()
-  const filtered = all.filter((e: any) => {
-    const es = e.start instanceof Date ? e.start.getTime() : new Date(e.start).getTime()
-    const ee = e.end instanceof Date ? e.end.getTime() : new Date(e.end).getTime()
-    return ee > start && es < end
-  })
-  log('applyEventsForVisibleRange: setting', filtered.length, 'events', (performance.now() - t0).toFixed(0) + 'ms')
-  requestAnimationFrame(() => { options.events = filtered })
-  log('applyEventsForVisibleRange: done', (performance.now() - t0).toFixed(0) + 'ms')
-  queueMicrotask(() => log('applyEventsForVisibleRange: returned (microtask)'))
-}
-
 function onDatesSet(dateInfo: { start: Date; end: Date }) {
-  const t0 = performance.now()
-  log('datesSet: entry', (performance.now() - t0).toFixed(0) + 'ms')
-  const start = dateInfo.start.getTime()
-  const end = dateInfo.end.getTime()
-  if (viewRange.value && viewRange.value.start.getTime() === start && viewRange.value.end.getTime() === end) {
-    requestAnimationFrame(() => log('after datesSet return (next frame)'))
-    log('datesSet: same range skip')
-    return
-  }
   viewRange.value = { start: dateInfo.start, end: dateInfo.end }
-  log('datesSet:', dateInfo.start.toISOString().slice(0, 10), '->', dateInfo.end.toISOString().slice(0, 10), (performance.now() - t0).toFixed(0) + 'ms')
-  log('datesSet: before apply', (performance.now() - t0).toFixed(0) + 'ms')
-  applyEventsForVisibleRange()
-  log('datesSet: done', (performance.now() - t0).toFixed(0) + 'ms')
-  queueMicrotask(() => log('datesSet: callback exited (microtask)'))
+  
+  const calendarApi = fullCalendar.value?.getApi()
+  if (calendarApi) {
+    title.value = calendarApi.currentData?.viewTitle || title.value
+    currentViewType.value = calendarApi.view.type
+  }
 }
 
 /*Hooks*/
 const options = reactive({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
   initialView,
-  events: [] as any[],
   locale: 'fr',
   timeZone,
   editable: props.authorize,
@@ -260,16 +215,36 @@ const options = reactive({
   eventClick: eventClick,
   eventDrop: eventDrop,
   selectable: props.authorize,
-  headerToolbar: false,
-  datesSet: onDatesSet
+  headerToolbar: false as false,
+  datesSet: onDatesSet,
+  
+  events: (fetchInfo: any, successCallback: (events: any[]) => void) => {
+    const all = props.events
+    
+    if (!all || !all.length) {
+      successCallback([])
+      return
+    }
+
+    const start = fetchInfo.start.getTime()
+    const end = fetchInfo.end.getTime()
+
+    const filtered = all.filter((e: any) => {
+      const es = e.start instanceof Date ? e.start.getTime() : new Date(e.start).getTime()
+      const ee = e.end instanceof Date ? e.end.getTime() : new Date(e.end).getTime()
+      return ee > start && es < end
+    })
+
+    successCallback(filtered.map((e: any) => ({ ...e })))
+  }
 })
 
 /*Refs*/
 const fullCalendar = ref()
 const showFullCalendar = ref(false)
-const pendingEvents = ref<any[]>([])
 const viewRange = ref<{ start: Date; end: Date } | null>(null)
 const initialViewText = ref(viewsTitle.find(e => e.key === initialView)?.value)
+const currentViewType = ref(initialView)
 
 /*Methods*/
 const currentView = () => {
@@ -315,22 +290,6 @@ const onChangeView = async (view: string) => {
 }
 
 const usersStore = useUsersStore()
-onMounted(async () => {
-  log('Calendar mount: fetchUsers start')
-  const t0 = performance.now()
-  await usersStore.fetchUsers()
-  log('Calendar mount: fetchUsers end', `${(performance.now() - t0).toFixed(0)}ms`)
-})
-
-/** Map userId -> user for O(1) lookup in eventContent (avoids .find() per event) */
-const userById = computed(() => {
-  const map = new Map<number, User>()
-  for (const u of usersStore.users) map.set(u.id, u)
-  return map
-})
-const getUserById = (id: number) => userById.value.get(id)
-const formatUserName = (u: User | undefined) =>
-  u ? `${u.first_name ?? ''} ${u.last_name ?? ''}`.trim() : ''
 
 const onNext = () => {
   const calendarApi = fullCalendar.value?.getApi()
@@ -354,30 +313,13 @@ watch(() => props.selectedDay, () => {
   setDate()
 }, { deep: true })
 
-watch(() => props.events, (val) => {
-  log('watch events: start')
-  const events = Array.isArray(val) ? [...val] : []
-  pendingEvents.value = events
-  log('watch events: pendingEvents set', events.length)
-  log('events updated: total', events.length)
-  log('watch events: scheduling rAF for apply')
-  requestAnimationFrame(() => applyEventsForVisibleRange())
-  log('watch events: end')
-}, { deep: true })
-watch(showFullCalendar, (visible) => {
-  if (visible && pendingEvents.value.length > 0) {
-    nextTick(() => applyEventsForVisibleRange())
-  }
-})
-
 /*Lifecycle*/
 onMounted(() => {
-  log('Calendar onMounted')
+  usersStore.fetchUsers()
   title.value = getTitle()
-  requestAnimationFrame(() => {
-    log('about to set showFullCalendar true')
+  
+  setTimeout(() => {
     showFullCalendar.value = true
-    log('showFullCalendar = true')
-  })
+  }, 100)
 })
 </script>

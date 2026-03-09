@@ -12,20 +12,16 @@ export const useUsersStore = defineStore('users', {
   actions: {
     async fetchUsers(): Promise<User[]> {
       if (this.loaded) {
-        if (typeof console !== 'undefined' && console.log) console.log('[Planning] fetchUsers: cache hit')
         return this.list
       }
       if (this._fetchPromise) {
-        if (typeof console !== 'undefined' && console.log) console.log('[Planning] fetchUsers: reusing in-flight request')
         return this._fetchPromise
       }
-      if (typeof console !== 'undefined' && console.log) console.log('[Planning] fetchUsers: GET /users start')
       this._fetchPromise = getUsers()
       try {
         const users = await this._fetchPromise
         this.list = users
         this.loaded = true
-        if (typeof console !== 'undefined' && console.log) console.log('[Planning] fetchUsers: GET /users done', users?.length ?? 0, 'users')
         return users
       } finally {
         this._fetchPromise = null
