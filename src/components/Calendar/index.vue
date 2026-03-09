@@ -131,6 +131,7 @@
 
   </header>
   <FullCalendar
+      v-if="showFullCalendar"
       ref="fullCalendar"
       :class="{'disabled': !authorize}"
       :options="options">
@@ -159,7 +160,7 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon } from '@heroicons/vue/solid'
 
-import { onMounted, reactive, ref, watch, computed } from "vue";
+import { onMounted, reactive, ref, watch, computed, nextTick } from "vue";
 import type { Ref } from "vue";
 
 const DEBUG = true
@@ -215,6 +216,8 @@ const options = reactive({
 
 /*Refs*/
 const fullCalendar = ref()
+const showFullCalendar = ref(false)
+const pendingEvents = ref<any[]>([])
 const initialViewText = ref(viewsTitle.find(e => e.key === initialView)?.value)
 
 /*Methods*/
@@ -301,17 +304,9 @@ watch(() => props.selectedDay, () => {
 }, { deep: true })
 
 const BATCH_SIZE = 25
-watch(() => props.events, (val) => {
-  const events = Array.isArray(val) ? [...val] : []
-  const n = events.length
-  log('watch events: batch update', n, 'events')
-  const api = fullCalendar.value?.getApi()
-  if (!api) {
-    options.events = events
-    return
-  }
+function applyEventsInBatches(events: any[], api: { removeAllEvents: () => void; addEvent: (ev: any) => void }) {
   api.removeAllEvents()
-  if (n === 0) return
+  if (events.length === 0) return
   let i = 0
   const addBatch = () => {
     const batch = events.slice(i, i + BATCH_SIZE)
@@ -321,14 +316,36 @@ watch(() => props.events, (val) => {
         api.addEvent(ev)
       } catch (_) {}
     }
-    if (i < n) requestAnimationFrame(addBatch)
-    else log('watch events: done', n, 'events')
+    if (i < events.length) requestAnimationFrame(addBatch)
+    else log('watch events: done', events.length, 'events')
   }
   requestAnimationFrame(addBatch)
+}
+watch(() => props.events, (val) => {
+  const events = Array.isArray(val) ? [...val] : []
+  const n = events.length
+  pendingEvents.value = events
+  log('watch events: batch update', n, 'events')
+  const api = fullCalendar.value?.getApi()
+  if (!api) {
+    if (n <= 50) options.events = events
+    return
+  }
+  applyEventsInBatches(events, api)
 }, { deep: true })
+watch(showFullCalendar, (visible) => {
+  if (!visible || pendingEvents.value.length === 0) return
+  nextTick(() => {
+    const api = fullCalendar.value?.getApi()
+    if (api) applyEventsInBatches(pendingEvents.value, api)
+  })
+})
 
 /*Lifecycle*/
 onMounted(() => {
   title.value = getTitle()
+  requestAnimationFrame(() => {
+    showFullCalendar.value = true
+  })
 })
 </script>
