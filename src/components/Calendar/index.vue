@@ -200,15 +200,19 @@ const eventDrop = (arg: any) => emit('eventDrop', arg)
 const eventClick = (arg: any) => emit('eventClick', arg)
 
 function applyEventsForVisibleRange() {
+  const t0 = performance.now()
+  log('applyEventsForVisibleRange: start')
   const range = viewRange.value
   const all = pendingEvents.value
+  log('applyEventsForVisibleRange: all=', all.length, 'range=', range ? 'yes' : 'no', (performance.now() - t0).toFixed(0) + 'ms')
   if (!all.length) {
     options.events = []
+    log('applyEventsForVisibleRange: done (empty)', (performance.now() - t0).toFixed(0) + 'ms')
     return
   }
   if (!range) {
     options.events = []
-    log('visibleRange: no range yet, waiting for datesSet (total', all.length, ')')
+    log('visibleRange: no range yet, waiting for datesSet (total', all.length, ')', (performance.now() - t0).toFixed(0) + 'ms')
     return
   }
   const start = range.start.getTime()
@@ -218,19 +222,25 @@ function applyEventsForVisibleRange() {
     const ee = e.end instanceof Date ? e.end.getTime() : new Date(e.end).getTime()
     return ee > start && es < end
   })
-  log('visibleRange: total', all.length, '-> in range', filtered.length)
+  log('applyEventsForVisibleRange: setting', filtered.length, 'events', (performance.now() - t0).toFixed(0) + 'ms')
   options.events = filtered
+  log('applyEventsForVisibleRange: done', (performance.now() - t0).toFixed(0) + 'ms')
 }
 
 function onDatesSet(dateInfo: { start: Date; end: Date }) {
+  const t0 = performance.now()
+  log('datesSet: entry', (performance.now() - t0).toFixed(0) + 'ms')
   const start = dateInfo.start.getTime()
   const end = dateInfo.end.getTime()
   if (viewRange.value && viewRange.value.start.getTime() === start && viewRange.value.end.getTime() === end) {
+    log('datesSet: same range skip')
     return
   }
   viewRange.value = { start: dateInfo.start, end: dateInfo.end }
-  log('datesSet:', dateInfo.start.toISOString().slice(0, 10), '->', dateInfo.end.toISOString().slice(0, 10))
+  log('datesSet:', dateInfo.start.toISOString().slice(0, 10), '->', dateInfo.end.toISOString().slice(0, 10), (performance.now() - t0).toFixed(0) + 'ms')
+  log('datesSet: before apply', (performance.now() - t0).toFixed(0) + 'ms')
   applyEventsForVisibleRange()
+  log('datesSet: done', (performance.now() - t0).toFixed(0) + 'ms')
 }
 
 /*Hooks*/
