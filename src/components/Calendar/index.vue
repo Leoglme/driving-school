@@ -225,7 +225,7 @@ function applyEventsForVisibleRange() {
     return ee > start && es < end
   })
   log('applyEventsForVisibleRange: setting', filtered.length, 'events', (performance.now() - t0).toFixed(0) + 'ms')
-  options.events = filtered
+  requestAnimationFrame(() => { options.events = filtered })
   log('applyEventsForVisibleRange: done', (performance.now() - t0).toFixed(0) + 'ms')
   queueMicrotask(() => log('applyEventsForVisibleRange: returned (microtask)'))
 }
