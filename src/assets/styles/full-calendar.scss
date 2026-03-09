@@ -10,6 +10,7 @@
   --fc-today-bg-color: theme('colors.blue.50');
   --fc-event-border-color: theme('colors.pink.100');
   --fc-event-bg-color: theme('colors.pink.100');
+  --fc-event-text-color: #be185d;
 }
 .fc .fc-toolbar-title {
   font-weight: 600;
@@ -84,8 +85,8 @@ th.fc-col-header-cell {
 .fc-daygrid-event-harness, .fc-timegrid-event-harness {
   a {
     background: theme('colors.pink.50');
-    color: theme('colors.pink.700');
-    border-color: theme('colors.pink.700');
+    color: #be185d;
+    border-color: #be185d;
     font-size: 12px;
     cursor: pointer;
     border-radius: 4px;
@@ -96,6 +97,13 @@ th.fc-col-header-cell {
       background: theme('colors.pink.100');
     }
   }
+}
+
+.fc .fc-daygrid-event .fc-event-title.fc-sticky {
+  display: block;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
 /*Disabled*/
