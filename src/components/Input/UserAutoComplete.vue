@@ -43,13 +43,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import type { Ref, ComputedRef, PropType } from "vue";
 import type { User } from "@/types/user";
-import { getUsers } from "@/Api/users";
+import { useUsersStore } from "@/stores/users.store";
 import { Field } from "vee-validate"
 
 const limitResult = 6
+const usersStore = useUsersStore()
 
 /*Props*/
 const props = defineProps({
@@ -60,20 +61,25 @@ const props = defineProps({
 })
 
 /*Refs*/
-const users: Ref<User[]> = ref([])
-const allUsers: Ref<User[]> = ref([])
+const allUsers: ComputedRef<User[]> = computed(() => usersStore.users)
 const user: ComputedRef<User | undefined> = computed(() => {
   return allUsers.value.find(u => u.id === props.userId)
 })
-const defaultSearch: Ref<string> = computed(() => {
+const defaultSearch: ComputedRef<string> = computed(() => {
   const _user: User | undefined = user.value
   if(!_user) {
     return ''
   }
-
   return _user.first_name && _user.last_name ? _user.first_name + ' ' + _user.last_name : ''
 })
 const search = ref(defaultSearch.value)
+const users: ComputedRef<User[]> = computed(() => {
+  if (!search.value) return []
+  const q = search.value.toLowerCase().trim()
+  return usersStore.users
+    .filter(u => `${u.first_name} ${u.last_name}`.toLowerCase().includes(q))
+    .slice(0, limitResult)
+})
 
 
 /*Emits*/
@@ -90,14 +96,7 @@ const setInput = (user: User) => {
   emit('setUser', user.id)
 }
 
-getUsers().then(r => allUsers.value = r)
-
-watch(() => search.value, (val) => {
-  if (!val) {
-    return users.value = []
-  }
-  getUsers(val, limitResult).then(r => users.value = r)
-})
+onMounted(() => usersStore.fetchUsers())
 
 watch(() => defaultSearch.value, (val) => {
   search.value = val

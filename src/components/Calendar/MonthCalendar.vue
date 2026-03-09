@@ -64,14 +64,12 @@ import {
   format,
   getDay,
   isEqual,
-  isSameDay,
   isSameMonth,
   isToday,
   parse,
-  parseISO,
   startOfToday,
 } from 'date-fns'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 
 
@@ -107,12 +105,17 @@ const colStartClasses = ref([
   'col-start-7',
 ])
 
-
-
-
+/** Set des dates ayant au moins un rendez-vous (yyyy-MM-dd), recalculé uniquement quand actionDates change. Évite O(n) par jour. */
+const actionDatesSet = computed(() => {
+  const set = new Set<string>()
+  for (const dateStr of props.actionDates) {
+    set.add(format(new Date(dateStr), 'yyyy-MM-dd'))
+  }
+  return set
+})
 
 /*Methods*/
-const hasAction = (day: Date) => props.actionDates.some(date => isSameDay(parseISO(date), day))
+const hasAction = (day: Date) => actionDatesSet.value.has(format(day, 'yyyy-MM-dd'))
 
 const buttonClasses = (day: Date) => {
   let classes = ''

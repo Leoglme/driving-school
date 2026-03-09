@@ -168,7 +168,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 import { addDays, startOfToday, differenceInMinutes } from "date-fns";
-import { getUsers } from "@/Api/users";
+import { useUsersStore } from "@/stores/users.store";
 import type { User } from "@/types/user";
 
 /*Data*/
@@ -257,13 +257,11 @@ const onChangeView = async (view: string) => {
   }
 }
 
-const users: Ref<User[]> = ref([])
-
-getUsers().then((us: User[]) => users.value = us)
-
+const usersStore = useUsersStore()
+onMounted(() => usersStore.fetchUsers())
 
 const convertUserIdToUser = (id: number) => {
-  return users.value.find(u => u.id === id)
+  return usersStore.users.find(u => u.id === id)
 }
 
 const onNext = () => {
