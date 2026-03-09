@@ -305,10 +305,14 @@ watch(() => props.selectedDay, () => {
 
 const BATCH_SIZE = 25
 function applyEventsInBatches(events: any[], api: { removeAllEvents: () => void; addEvent: (ev: any) => void }) {
+  const t0 = performance.now()
+  log('applyEventsInBatches: start')
   api.removeAllEvents()
+  log('applyEventsInBatches: removeAllEvents took', `${(performance.now() - t0).toFixed(0)}ms`)
   if (events.length === 0) return
   let i = 0
   const addBatch = () => {
+    const batchStart = performance.now()
     const batch = events.slice(i, i + BATCH_SIZE)
     i += BATCH_SIZE
     for (const ev of batch) {
@@ -316,22 +320,28 @@ function applyEventsInBatches(events: any[], api: { removeAllEvents: () => void;
         api.addEvent(ev)
       } catch (_) {}
     }
+    if (i === BATCH_SIZE) log('applyEventsInBatches: first addBatch(25) took', `${(performance.now() - batchStart).toFixed(0)}ms`)
     if (i < events.length) requestAnimationFrame(addBatch)
     else log('watch events: done', events.length, 'events')
   }
   requestAnimationFrame(addBatch)
 }
 watch(() => props.events, (val) => {
+  const tw0 = performance.now()
+  log('watch: start')
   const events = Array.isArray(val) ? [...val] : []
   const n = events.length
   pendingEvents.value = events
-  log('watch events: batch update', n, 'events')
+  log('watch: after copy', n, 'events', `${(performance.now() - tw0).toFixed(0)}ms`)
   const api = fullCalendar.value?.getApi()
+  log('watch: getApi took', `${(performance.now() - tw0).toFixed(0)}ms`)
   if (!api) {
     if (n <= 50) options.events = events
+    log('watch: end (no api)', `${(performance.now() - tw0).toFixed(0)}ms`)
     return
   }
   requestAnimationFrame(() => applyEventsInBatches(events, api))
+  log('watch: end', `${(performance.now() - tw0).toFixed(0)}ms`)
 }, { deep: true })
 watch(showFullCalendar, (visible) => {
   if (!visible || pendingEvents.value.length === 0) return

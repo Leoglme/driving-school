@@ -86,9 +86,17 @@ const refresh = () => {
     })
     if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: about to set meets', r.length)
     requestAnimationFrame(() => {
+      const rAF0 = performance.now()
+      if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF: start')
       meets.value = r
-      setActionDates()
-      if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: GET /meets done', r.length, 'meets', `${(performance.now() - t0).toFixed(0)}ms`)
+      if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF: after meets.value', `${(performance.now() - rAF0).toFixed(0)}ms`)
+      requestAnimationFrame(() => {
+        const rAF1 = performance.now()
+        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: before setActionDates')
+        setActionDates()
+        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: setActionDates took', `${(performance.now() - rAF1).toFixed(0)}ms`)
+        if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: GET /meets done', r.length, 'meets', `${(performance.now() - t0).toFixed(0)}ms`)
+      })
     })
   })
 }
