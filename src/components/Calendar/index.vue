@@ -208,11 +208,13 @@ function applyEventsForVisibleRange() {
   if (!all.length) {
     options.events = []
     log('applyEventsForVisibleRange: done (empty)', (performance.now() - t0).toFixed(0) + 'ms')
+    queueMicrotask(() => log('applyEventsForVisibleRange: returned (microtask)'))
     return
   }
   if (!range) {
     options.events = []
     log('visibleRange: no range yet, waiting for datesSet (total', all.length, ')', (performance.now() - t0).toFixed(0) + 'ms')
+    queueMicrotask(() => log('applyEventsForVisibleRange: returned (microtask)'))
     return
   }
   const start = range.start.getTime()
@@ -225,6 +227,7 @@ function applyEventsForVisibleRange() {
   log('applyEventsForVisibleRange: setting', filtered.length, 'events', (performance.now() - t0).toFixed(0) + 'ms')
   options.events = filtered
   log('applyEventsForVisibleRange: done', (performance.now() - t0).toFixed(0) + 'ms')
+  queueMicrotask(() => log('applyEventsForVisibleRange: returned (microtask)'))
 }
 
 function onDatesSet(dateInfo: { start: Date; end: Date }) {
@@ -233,6 +236,7 @@ function onDatesSet(dateInfo: { start: Date; end: Date }) {
   const start = dateInfo.start.getTime()
   const end = dateInfo.end.getTime()
   if (viewRange.value && viewRange.value.start.getTime() === start && viewRange.value.end.getTime() === end) {
+    requestAnimationFrame(() => log('after datesSet return (next frame)'))
     log('datesSet: same range skip')
     return
   }
@@ -241,6 +245,7 @@ function onDatesSet(dateInfo: { start: Date; end: Date }) {
   log('datesSet: before apply', (performance.now() - t0).toFixed(0) + 'ms')
   applyEventsForVisibleRange()
   log('datesSet: done', (performance.now() - t0).toFixed(0) + 'ms')
+  queueMicrotask(() => log('datesSet: callback exited (microtask)'))
 }
 
 /*Hooks*/
@@ -350,10 +355,14 @@ watch(() => props.selectedDay, () => {
 }, { deep: true })
 
 watch(() => props.events, (val) => {
+  log('watch events: start')
   const events = Array.isArray(val) ? [...val] : []
   pendingEvents.value = events
+  log('watch events: pendingEvents set', events.length)
   log('events updated: total', events.length)
+  log('watch events: scheduling rAF for apply')
   requestAnimationFrame(() => applyEventsForVisibleRange())
+  log('watch events: end')
 }, { deep: true })
 watch(showFullCalendar, (visible) => {
   if (visible && pendingEvents.value.length > 0) {
@@ -363,9 +372,12 @@ watch(showFullCalendar, (visible) => {
 
 /*Lifecycle*/
 onMounted(() => {
+  log('Calendar onMounted')
   title.value = getTitle()
   requestAnimationFrame(() => {
+    log('about to set showFullCalendar true')
     showFullCalendar.value = true
+    log('showFullCalendar = true')
   })
 })
 </script>

@@ -79,23 +79,28 @@ const refresh = () => {
   if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: GET /meets start', 'user_id=', user.value)
   const t0 = performance.now()
   getMeets(user.value).then(r => {
+    if (typeof console !== 'undefined' && console.log) console.log('[Planning] GET /meets response received', r.length)
     r.map((e: Meet & { eventId: number }) => {
       e.eventId = e.id
       e.start = new Date(e.start)
       e.end = new Date(e.end)
     })
     if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: about to set meets', r.length)
+    if (typeof console !== 'undefined' && console.log) console.log('[Planning] scheduling rAF1')
     requestAnimationFrame(() => {
       const rAF0 = performance.now()
-      if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF: start')
+      if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF1: start')
       meets.value = r
-      if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF: after meets.value', `${(performance.now() - rAF0).toFixed(0)}ms`)
+      if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF1: after meets.value', `${(performance.now() - rAF0).toFixed(0)}ms`)
+      if (typeof console !== 'undefined' && console.log) console.log('[Planning] scheduling rAF2')
       requestAnimationFrame(() => {
         const rAF1 = performance.now()
+        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: start')
         if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: before setActionDates')
         setActionDates()
-        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: setActionDates took', `${(performance.now() - rAF1).toFixed(0)}ms`)
+        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: after setActionDates', `${(performance.now() - rAF1).toFixed(0)}ms`)
         if (typeof console !== 'undefined' && console.log) console.log('[Planning] refresh: GET /meets done', r.length, 'meets', `${(performance.now() - t0).toFixed(0)}ms`)
+        if (typeof console !== 'undefined' && console.log) console.log('[Planning] rAF2: done')
       })
     })
   })
