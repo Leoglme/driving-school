@@ -31,19 +31,23 @@ const routes = [
             },
             {
                 path: "students",
-                component: { template: "<router-view/>" },
-                children: [
-                    { path: "", name: "students-list", component: Users },
-                    { path: "add", name: "students-add", component: addStudent }
-                ],
+                name: "students-list",
+                component: Users
+            },
+            {
+                path: "students/add",
+                name: "students-add",
+                component: addStudent
             },
             {
                 path: "employees",
-                component: { template: "<router-view/>" },
-                children: [
-                    { path: "", name: "employees-list", component: Employees },
-                    { path: "add", name: "employees-add", component: addEmployee }
-                ],
+                name: "employees-list",
+                component: Employees
+            },
+            {
+                path: "employees/add",
+                name: "employees-add",
+                component: addEmployee
             },
             {
                 path: "/account",
