@@ -324,6 +324,13 @@ watch(() => props.selectedDay, () => {
   setDate()
 }, { deep: true })
 
+watch(() => props.events, () => {
+  const calendarApi = fullCalendar.value?.getApi()
+  if (calendarApi) {
+    calendarApi.refetchEvents()
+  }
+}, { deep: true })
+
 /*Lifecycle*/
 onMounted(() => {
   usersStore.fetchUsers()

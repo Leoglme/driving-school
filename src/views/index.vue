@@ -45,7 +45,7 @@ import { inject, ref, shallowRef } from "vue";
 import { format, startOfToday } from "date-fns";
 import type { Ref } from "vue";
 import type { Meet } from "@/types/meet";
-import { deleteMeet, getMeets, updateMeet } from "@/Api/meet";
+import { deleteMeet, getMeetByUserId, getMeets, updateMeet } from "@/Api/meet";
 import type { EventDef, EventDropArg, EventInput } from "@fullcalendar/common";
 import type { Notyf } from "notyf";
 import UserAutoComplete from "@/components/Input/UserAutoComplete.vue"
@@ -75,48 +75,64 @@ const authorize: Ref<boolean> = ref(auth.user?.role?.name !== 'Student')
 usersStore.fetchUsers()
 
 /*Sets*/
-const setActionDates = () => actionDates.value = meets.value.map((el) => {
-  return new Date(el.start).toISOString();
-})
-
-const setUser = (id: number) => {
-  user.value = id
-  refresh(false) // Pas de skeleton lors du changement d'utilisateur
+const setActionDates = () => {
+  actionDates.value = meets.value.map((el) => new Date(el.start).toISOString())
 }
 
-/*Api methods*/
+const setUser = (id: number | undefined) => {
+  user.value = id
+  refresh(false)
+}
+
+type MeetWithExtras = Meet & {
+  eventId: number
+  duration?: number
+  chefName?: string
+  userName?: string
+}
+
+function normalizeMeet(e: Meet & { chef?: any; user?: any }): MeetWithExtras {
+  const start = new Date(e.start)
+  const end = new Date(e.end)
+  const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60)
+  const formatName = (u: any) => (u ? `${u.first_name ?? ''} ${u.last_name ?? ''}`.trim() : '')
+  return {
+    ...e,
+    eventId: e.id,
+    start,
+    end,
+    duration: Math.round(durationMinutes / 60),
+    chefName: formatName(e.chef),
+    userName: formatName(e.user),
+  }
+}
+
+function applyMeets(raw: Meet[], showSkeleton: boolean) {
+  const normalized = raw.map((e) => normalizeMeet(e))
+  meets.value = normalized
+  setActionDates()
+  if (showSkeleton) {
+    setTimeout(() => {
+      meetsLoaded.value = true
+    }, 50)
+  }
+}
+
 const refresh = (showSkeleton = true) => {
   if (showSkeleton) {
     meetsLoaded.value = false
   }
-  
-  getMeets(user.value).then(r => {
-    r.map((e: Meet & { eventId: number; duration?: number; chefName?: string; userName?: string }) => {
-      e.eventId = e.id
-      e.start = new Date(e.start)
-      e.end = new Date(e.end)
-      
-      const durationMinutes = (e.end.getTime() - e.start.getTime()) / (1000 * 60)
-      e.duration = Math.round(durationMinutes / 60)
-      
-      const formatName = (u: any) => u ? `${u.first_name ?? ''} ${u.last_name ?? ''}`.trim() : ''
-      e.chefName = formatName(e.chef)
-      e.userName = formatName(e.user)
-    })
-    
-    setTimeout(() => {
-      meets.value = r
-      setActionDates()
-      
-      if (showSkeleton) {
-        setTimeout(() => {
-          meetsLoaded.value = true
-        }, 50)
-      }
-    }, 0)
+
+  const fetchPromise = user.value != null
+    ? getMeetByUserId(user.value)
+    : getMeets(undefined)
+
+  fetchPromise.then((r: Meet[]) => {
+    setTimeout(() => applyMeets(r, showSkeleton), 0)
   })
 }
-refresh(true) // Premier chargement avec skeleton
+
+refresh(true)
 
 /*Hooks*/
 const notyf: Notyf | undefined = inject('notyf')
