@@ -188,7 +188,7 @@ const props = defineProps({
 })
 
 /*Emits*/
-const emit = defineEmits(['addEvent', 'onSelect', 'eventDrop', 'eventClick'])
+const emit = defineEmits(['addEvent', 'onSelect', 'eventDrop', 'eventClick', 'update:selectedDay'])
 const addEvent = () => emit('addEvent')
 const onSelect = (arg: any) => emit('onSelect', arg)
 const eventDrop = (arg: any) => emit('eventDrop', arg)
@@ -196,11 +196,18 @@ const eventClick = (arg: any) => emit('eventClick', arg)
 
 function onDatesSet(dateInfo: { start: Date; end: Date }) {
   viewRange.value = { start: dateInfo.start, end: dateInfo.end }
-  
+
   const calendarApi = fullCalendar.value?.getApi()
   if (calendarApi) {
     title.value = calendarApi.currentData?.viewTitle || title.value
     currentViewType.value = calendarApi.view.type
+
+    const currentDate = addDays(calendarApi.getDate(), -1)
+    updatingFromCalendar.value = true
+    emit('update:selectedDay', currentDate)
+    nextTick(() => {
+      updatingFromCalendar.value = false
+    })
   }
 }
 
@@ -245,6 +252,7 @@ const showFullCalendar = ref(false)
 const viewRange = ref<{ start: Date; end: Date } | null>(null)
 const initialViewText = ref(viewsTitle.find(e => e.key === initialView)?.value)
 const currentViewType = ref(initialView)
+const updatingFromCalendar = ref(false)
 
 /*Methods*/
 const currentView = () => {
@@ -310,6 +318,9 @@ const setDate = (date: Date = props.selectedDay) => {
 }
 
 watch(() => props.selectedDay, () => {
+  if (updatingFromCalendar.value) {
+    return
+  }
   setDate()
 }, { deep: true })
 

@@ -174,7 +174,24 @@ const nextMonth = () => {
 onMounted(() => {
   // Component mounted
 })
+
 watch(() => props.actionDates.length, (n) => {
   // Action dates updated
 })
+
+watch(
+  () => props.selectedDay,
+  (newVal: Date) => {
+    currentDay.value = newVal
+    const monthKey = format(newVal, 'MMM-yyyy')
+    if (monthKey !== currentMonth.value) {
+      currentMonth.value = monthKey
+      firstDayCurrentMonth.value = parse(monthKey, 'MMM-yyyy', new Date())
+      days.value = eachDayOfInterval({
+        start: firstDayCurrentMonth.value,
+        end: endOfMonth(firstDayCurrentMonth.value),
+      })
+    }
+  }
+)
 </script>
