@@ -157,6 +157,12 @@ watch(() => defaultSearch.value, (val) => {
   search.value = val
 })
 
+watch(search, (val) => {
+  if (!val && !props.userId) {
+    emit('setUser', undefined)
+  }
+})
+
 watch(() => users.value.length, () => {
   highlightedIndex.value = 0
 })
