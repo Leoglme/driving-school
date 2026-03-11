@@ -29,7 +29,8 @@ const { setRoles } = useReferencielStore()
 const { pending } = toRefs(app.$state);
 const { setPending } = app;
 
-const { token, setToken } = useAuthStore()
+const authStore = useAuthStore()
+const { token, setToken } = authStore
 
 setToken(token)
 
@@ -43,6 +44,8 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
+let isLoggingOut = false;
+
 axios.interceptors.response.use(resp => {
   progresses.pop()?.finish();
   setPending(false)
@@ -50,6 +53,19 @@ axios.interceptors.response.use(resp => {
 }, (error) => {
   progresses.pop()?.finish();
   setPending(false)
+
+  const status = error.response?.status;
+  const errorMessage = error.response?.data?.error;
+
+  if (
+    (status === 401 || status === 403 || errorMessage === 'Signature has expired')
+    && !isLoggingOut
+  ) {
+    isLoggingOut = true;
+    authStore.logout();
+    return Promise.reject(error);
+  }
+
   return Promise.reject(error);
 });
 
