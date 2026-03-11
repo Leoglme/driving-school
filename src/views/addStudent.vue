@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-wrap">
     <div class="w-full md:px-4">
-      <UserForm action="create" :user="user"/>
+      <UserForm action="create" :user="user" :show-role-select="false"/>
     </div>
   </div>
 </template>

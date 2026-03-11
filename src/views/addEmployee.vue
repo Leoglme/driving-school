@@ -1,7 +1,12 @@
 <template>
   <div class="flex flex-wrap">
     <div class="w-full md:px-4">
-      <UserForm action="create" :user="user"/>
+      <UserForm
+      action="create"
+      :user="user"
+      redirect-after-create="/employees"
+      :exclude-role-names="['Student']"
+    />
     </div>
   </div>
 </template>

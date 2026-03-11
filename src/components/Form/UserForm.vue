@@ -127,11 +127,12 @@
               </div>
             </div>
           </div>
-          <div class="w-full lg:w-6/12 md:px-4">
+          <div class="w-full lg:w-6/12 md:px-4" v-if="showRoleSelect">
             <div class="relative w-full mb-3">
               <RoleSelect
                   :disabled="!authorize"
                   :selected="role"
+                  :exclude-role-names="excludeRoleNames"
                   @update:selected="role = $event"
               />
             </div>
@@ -176,9 +177,12 @@ import type { Role } from "@/types/referenciel";
 import { useAuthStore } from "@/stores/auth.store";
 
 /*Props*/
-const { action, user } = defineProps({
+const { action, user, redirectAfterCreate, showRoleSelect, excludeRoleNames } = defineProps({
   action: { type: String, default: "update" },
-  user: { type: Object as PropType<User & { password: string, hours_remaining: number }>, default: () => ({}) }
+  user: { type: Object as PropType<User & { password: string, hours_remaining: number }>, default: () => ({}) },
+  redirectAfterCreate: { type: String, default: '/students' },
+  showRoleSelect: { type: Boolean, default: true },
+  excludeRoleNames: { type: Array as PropType<string[]>, default: () => [] }
 });
 
 /*Store*/
@@ -244,7 +248,7 @@ const onSubmit = (values: Record<string, any>) => {
     const createCommand: CreateUserCommand = { ...command, password: user.password }
     createUser(createCommand).then(() => {
       notyf?.success('Utilisateur créer avec succès.')
-      router.push('/students')
+      router.push(redirectAfterCreate)
     }).catch(() => {
       notyf?.error('Une erreur s\'est produite lors de la création')
     })
