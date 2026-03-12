@@ -5,7 +5,8 @@
       <div class="text-center flex flex-col sm:flex-row gap-6 justify-between">
         <h6 class="text-slate-700 text-xl font-bold">
           {{ action === "update" ? `Profile de ${fullName}` : 'Nouvel utilisateur' }}</h6>
-        <button :disabled="disabled()"
+        <button v-if="!(action === 'update' && isDemoAdmin)"
+                :disabled="disabled()"
                 class="bg-indigo-600 text-white active:bg-indigo-500 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
                 type="submit">
           {{ action === "update" ? 'Sauvegarder' : 'Créer utilisateur' }}
@@ -222,13 +223,16 @@ const refresh = () => {
 }
 
 
+const DEMO_ADMIN_EMAIL = 'admin@driving-school.dibodev.fr'
+
 /*Computed*/
 const fullName = computed(() => user.first_name + " " + user.last_name)
+const isDemoAdmin = computed(() => user?.email === DEMO_ADMIN_EMAIL)
 
 
 /* Appel Api*/
 const onSubmit = (values: Record<string, any>) => {
-  console.log("submit", values)
+  if (action === 'update' && isDemoAdmin.value) return
   const command: UserCommand = {
     role_id: role.value.id,
     first_name: user.first_name,
